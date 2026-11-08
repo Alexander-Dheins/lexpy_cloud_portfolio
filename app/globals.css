@@ -24,6 +24,13 @@
   --panel-glass-strong: oklch(98% 0.002 265 / 0.075);
   --panel-glass-border: oklch(98% 0.002 265 / 0.09);
 
+  /* Árbol de servicios */
+  --tree-bark: oklch(33% 0.006 265);
+  --tree-1: oklch(37% 0.005 265);
+  --tree-2: oklch(47% 0.005 265);
+  --tree-3: oklch(57% 0.005 265);
+  --tree-4: oklch(67% 0.004 265);
+
   /* Cristal (solo para la barra de navegación y tarjetas) */
   --glass-bg: oklch(93% 0.003 265 / 0.62);
   --glass-bg-strong: oklch(94% 0.003 265 / 0.78);
@@ -205,6 +212,40 @@ body {
   }
 }
 
+@keyframes a-wipe-left {
+  from {
+    clip-path: inset(0 0 0 100%);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes a-wipe-down {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes a-wipe-up {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes a-canopy {
+  from {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+}
+
 @keyframes a-turn {
   from {
     opacity: 0;
@@ -263,6 +304,54 @@ body {
 .a-pop {
   animation-name: a-pop;
   animation-duration: 380ms;
+}
+
+/* Árbol: se anima solo cuando JS lo "arma" y entra en pantalla;
+   sin JS o con movimiento reducido se ve completo y quieto. */
+.is-armed .t-anim {
+  animation-fill-mode: both;
+  animation-timing-function: var(--ease-out);
+  animation-delay: calc(var(--d, 0) * 1ms);
+  animation-play-state: paused;
+}
+.is-armed.is-visible .t-anim {
+  animation-play-state: running;
+}
+.is-armed .t-up {
+  animation-name: a-wipe-up;
+  animation-duration: 700ms;
+}
+.is-armed .t-down {
+  animation-name: a-wipe-down;
+  animation-duration: 1100ms;
+}
+.is-armed .t-canopy {
+  animation-name: a-canopy;
+  animation-duration: 900ms;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+.is-armed .t-right {
+  animation-name: a-wipe;
+  animation-duration: 800ms;
+}
+.is-armed .t-left {
+  animation-name: a-wipe-left;
+  animation-duration: 800ms;
+}
+.is-armed .t-rise {
+  animation-name: a-rise;
+  animation-duration: 560ms;
+}
+
+@media (min-width: 1280px) {
+  .tree-node {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--w);
+    translate: 0 -50%;
+  }
 }
 
 .a-progress {
