@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import logo from "@/public/brand/logo-lineas-negras.png";
 import { GITHUB_URL } from "@/lib/github-config";
+import { useI18n } from "@/components/i18n/I18nProvider";
 
 /* Asistente con respuestas automáticas: solo responde con lo que ya dice
    la web. Lo que no sabe lo deriva al formulario de contacto. */
@@ -14,56 +15,42 @@ interface Action {
   external?: boolean;
 }
 
+type AnswerId = "servicios" | "stack" | "empezar" | "infra" | "codigo";
+
 interface Answer {
-  id: string;
-  question: string;
+  id: AnswerId;
   keywords: string[];
-  text: string;
-  action?: Action;
+  href?: string;
+  external?: boolean;
 }
 
-const CONTACT: Action = { label: "Ir al formulario", href: "#contacto" };
-
+/* Palabras clave en español e inglés; el texto de cada respuesta viene del idioma activo. */
 const ANSWERS: Answer[] = [
   {
     id: "servicios",
-    question: "¿Qué servicios ofreces?",
-    keywords: ["servicio", "ofreces", "haces", "dedicas", "ayuda", "web", "app", "api", "automatiz", "devops", "consultor"],
-    text: "Desarrollo web y apps, APIs e integraciones, automatización y DevOps, y consultoría en digitalización. Todo sobre infraestructura propia.",
-    action: { label: "Ver servicios", href: "#servicios" },
+    keywords: ["servicio", "ofreces", "haces", "dedicas", "ayuda", "web", "app", "api", "automatiz", "devops", "consultor", "service", "offer", "help", "automation", "consulting"],
+    href: "#servicios",
   },
   {
     id: "stack",
-    question: "¿Con qué tecnologías trabajas?",
-    keywords: ["tecnolog", "stack", "lenguaje", "next", "react", "typescript", "docker", "postgres", "redis", "cloudflare", "framework"],
-    text: "Next.js y TypeScript en el desarrollo; Docker y Dokploy para desplegar; PostgreSQL y Redis para los datos; Cloudflare delante.",
+    keywords: ["tecnolog", "stack", "lenguaje", "next", "react", "typescript", "docker", "postgres", "redis", "cloudflare", "framework", "technolog", "language", "tools"],
   },
   {
     id: "empezar",
-    question: "¿Cómo empezamos un proyecto?",
-    keywords: ["empez", "comenz", "inici", "contrat", "proyecto", "cotiz", "presupuesto", "precio", "costo", "cuanto", "contact", "correo", "hablar"],
-    text: "Escríbeme por el formulario contando qué quieres lograr, para cuándo y qué sistemas usas hoy. Respondo al correo que dejes.",
-    action: CONTACT,
+    keywords: ["empez", "comenz", "inici", "contrat", "proyecto", "cotiz", "presupuesto", "precio", "costo", "cuanto", "contact", "correo", "hablar", "start", "begin", "hire", "project", "quote", "price", "cost", "budget", "email", "talk"],
+    href: "#contacto",
   },
   {
     id: "infra",
-    question: "¿Dónde se aloja lo que construyes?",
-    keywords: ["aloja", "hosting", "servidor", "vps", "despleg", "deploy", "nube", "infraestructura", "dokploy"],
-    text: "Esta misma web corre en un VPS propio con Dokploy: cada push a GitHub se construye y se publica solo, con SSL automático.",
+    keywords: ["aloja", "hosting", "servidor", "vps", "despleg", "deploy", "nube", "infraestructura", "dokploy", "host", "server", "cloud", "infrastructure"],
   },
   {
     id: "codigo",
-    question: "¿Puedo ver tu código?",
-    keywords: ["codigo", "github", "repositorio", "repo", "portafolio", "ejemplo", "trabajos"],
-    text: "Sí, mis repositorios están en GitHub.",
-    action: { label: "Abrir GitHub", href: GITHUB_URL, external: true },
+    keywords: ["codigo", "github", "repositorio", "repo", "portafolio", "ejemplo", "trabajos", "code", "portfolio", "example", "work"],
+    href: GITHUB_URL,
+    external: true,
   },
 ];
-
-const FALLBACK = {
-  text: "No tengo una respuesta automática para eso. Escríbeme por el formulario y te respondo personalmente.",
-  action: CONTACT,
-};
 
 interface Message {
   id: number;
@@ -119,14 +106,11 @@ const roundButton =
   "grid h-[52px] w-[52px] place-items-center rounded-full shadow-[0_6px_20px_-6px_oklch(20%_0.01_265/0.45)] ring-1 transition-[opacity,transform] duration-[var(--dur-short)] hover:-translate-y-0.5";
 
 export default function FloatingActions() {
+  const t = useI18n().t.chat;
   const [showTop, setShowTop] = useState(false);
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 0,
-      from: "bot",
-      text: "Hola, soy el asistente de lexpy. Elige una pregunta o escribe la tuya.",
-    },
+    { id: 0, from: "bot", text: t.greeting },
   ]);
   const [typing, setTyping] = useState(false);
   const [draft, setDraft] = useState("");
@@ -165,9 +149,18 @@ export default function FloatingActions() {
     if (timer.current) clearTimeout(timer.current);
   }, []);
 
+  function replyFor(answer: Answer | null): { text: string; action?: Action } {
+    if (!answer) return { text: t.fallback, action: { label: t.goToForm, href: "#contacto" } };
+    const copy = t.answers[answer.id];
+    return {
+      text: copy.text,
+      action: answer.href ? { label: copy.action, href: answer.href, external: answer.external } : undefined,
+    };
+  }
+
   function ask(text: string, answer: Answer | null) {
     if (typing) return;
-    const reply = answer ?? FALLBACK;
+    const reply = replyFor(answer);
     setMessages((list) => [...list, { id: nextId.current++, from: "user", text }]);
     setTyping(true);
     timer.current = setTimeout(() => {
@@ -195,7 +188,7 @@ export default function FloatingActions() {
   const asked = new Set(
     messages.filter((m) => m.from === "user").map((m) => m.text),
   );
-  const suggestions = ANSWERS.filter((a) => !asked.has(a.question));
+  const suggestions = ANSWERS.filter((a) => !asked.has(t.answers[a.id].question));
 
   return (
     <>
@@ -203,14 +196,14 @@ export default function FloatingActions() {
         <div
           id={panelId}
           role="dialog"
-          aria-label="Asistente de lexpy"
+          aria-label={t.name}
           className="a-rise fixed right-4 bottom-[84px] z-[60] flex h-[min(540px,calc(100svh-120px))] w-[min(380px,calc(100vw-2rem))] flex-col overflow-hidden rounded-[22px] border border-rule bg-paper-2 text-ink shadow-[0_24px_60px_-20px_oklch(20%_0.01_265/0.45)] [animation-duration:220ms] sm:right-6 sm:bottom-[92px]"
         >
           <header className="flex items-center gap-3 border-b border-rule px-4 py-3.5">
             <Image src={logo} alt="" width={36} height={36} className="h-9 w-9" />
             <div className="min-w-0 flex-1">
-              <p className="text-[15px] font-semibold">Asistente de lexpy</p>
-              <p className="text-[12.5px] text-muted">Respuestas automáticas</p>
+              <p className="text-[15px] font-semibold">{t.name}</p>
+              <p className="text-[12.5px] text-muted">{t.subtitle}</p>
             </div>
             <button
               type="button"
@@ -218,7 +211,7 @@ export default function FloatingActions() {
                 setOpen(false);
                 chatButtonRef.current?.focus();
               }}
-              aria-label="Cerrar el asistente"
+              aria-label={t.close}
               className="grid h-9 w-9 place-items-center rounded-full text-ink transition-colors duration-[var(--dur-short)] hover:bg-paper-3"
             >
               <svg viewBox="0 0 16 16" aria-hidden className="h-4 w-4" fill="none">
@@ -247,8 +240,8 @@ export default function FloatingActions() {
               </div>
             ))}
             {typing ? (
-              <p className="text-[13px] text-muted" aria-label="Escribiendo">
-                Escribiendo…
+              <p className="text-[13px] text-muted">
+                {t.typing}
               </p>
             ) : null}
           </div>
@@ -259,11 +252,11 @@ export default function FloatingActions() {
                 <button
                   key={answer.id}
                   type="button"
-                  onClick={() => ask(answer.question, answer)}
+                  onClick={() => ask(t.answers[answer.id].question, answer)}
                   disabled={typing}
                   className="shrink-0 rounded-full border border-rule bg-paper px-3 py-1.5 text-[13px] text-ink transition-colors duration-[var(--dur-short)] hover:border-muted disabled:opacity-55"
                 >
-                  {answer.question}
+                  {t.answers[answer.id].question}
                 </button>
               ))}
             </div>
@@ -271,21 +264,21 @@ export default function FloatingActions() {
 
           <form onSubmit={onSubmit} className="flex items-center gap-2 border-t border-rule p-3">
             <label htmlFor={`${panelId}-entrada`} className="sr-only">
-              Escribe tu pregunta
+              {t.inputLabel}
             </label>
             <input
               ref={inputRef}
               id={`${panelId}-entrada`}
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
-              placeholder="Escribe tu pregunta"
+              placeholder={t.inputLabel}
               autoComplete="off"
               maxLength={300}
               className="h-11 min-w-0 flex-1 rounded-full border border-rule bg-paper px-4 text-[16px] text-ink placeholder:text-muted/80 focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-ink"
             />
             <button
               type="submit"
-              aria-label="Enviar pregunta"
+              aria-label={t.send}
               disabled={typing || !draft.trim()}
               className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-ink text-on-ink transition-opacity duration-[var(--dur-short)] disabled:opacity-40"
             >
@@ -302,7 +295,7 @@ export default function FloatingActions() {
           <button
             type="button"
             onClick={scrollToTop}
-            aria-label="Volver al inicio"
+            aria-label={t.backToTop}
             className={`a-pop ${roundButton} bg-paper-2 text-ink ring-rule`}
           >
             <svg viewBox="0 0 16 16" aria-hidden className="h-[18px] w-[18px]" fill="none">
@@ -317,7 +310,7 @@ export default function FloatingActions() {
           onClick={() => setOpen((value) => !value)}
           aria-expanded={open}
           aria-controls={open ? panelId : undefined}
-          aria-label={open ? "Cerrar el asistente" : "Abrir el asistente"}
+          aria-label={open ? t.close : t.open}
           className={`${roundButton} bg-ink text-on-ink ring-on-ink/30`}
         >
           {open ? (

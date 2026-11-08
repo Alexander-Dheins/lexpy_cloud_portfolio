@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from "react";
+import { useI18n } from "@/components/i18n/I18nProvider";
 
 /* Dashboard ejecutivo: primera diapositiva del carrusel.
    Datos de muestra, solo para enseñar cómo luce el producto. */
@@ -68,28 +69,27 @@ function Sparkline({ values, delay }: { values: number[]; delay: number }) {
   );
 }
 
-function Delta({ value }: { value: string }) {
+function Delta({ value, suffix }: { value: string; suffix: string }) {
   return (
     <p className="mt-1.5 flex items-center gap-1 text-[11px] text-panel-muted">
       <Icon className="h-3 w-3 text-panel-ink">
         <path d="M7 17L17 7M9 7h8v8" />
       </Icon>
       <span className="whitespace-nowrap text-panel-ink">{value}</span>
-      <span className="whitespace-nowrap">vs mes anterior</span>
+      <span className="whitespace-nowrap">{suffix}</span>
     </p>
   );
 }
 
 /* ---------- Ingresos frente a proyección ---------- */
 
-const MONTHS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 const REAL = [12.5, 14, 18.5, 19.5, 17.5, 21, 22.5, 21.5, 25.5];
 const PROJECTION = [25.5, 27, 27.9, 28.7];
 const CH = { left: 40, right: 616, top: 14, bottom: 150, max: 40 };
 const px = (i: number) => CH.left + (i / 11) * (CH.right - CH.left);
 const py = (v: number) => CH.bottom - (v / CH.max) * (CH.bottom - CH.top);
 
-function RevenueChart() {
+function RevenueChart({ months }: { months: string[] }) {
   const realPts = REAL.map((v, i) => `${px(i).toFixed(1)},${py(v).toFixed(1)}`).join(" ");
   const projPts = PROJECTION.map((v, i) => `${px(i + 8).toFixed(1)},${py(v).toFixed(1)}`).join(" ");
   const area = `${px(0)},${CH.bottom} ${realPts} ${px(8)},${CH.bottom}`;
@@ -109,8 +109,8 @@ function RevenueChart() {
           </text>
         </g>
       ))}
-      {MONTHS.map((m, i) => (
-        <text key={m} x={px(i)} y={168} textAnchor="middle" fontSize="10.5" fill="var(--panel-muted)">
+      {months.map((m, i) => (
+        <text key={i} x={px(i)} y={168} textAnchor="middle" fontSize="10.5" fill="var(--panel-muted)">
           {m}
         </text>
       ))}
@@ -185,7 +185,7 @@ function Donut() {
   );
 }
 
-function Ring({ value }: { value: number }) {
+function Ring({ value, label }: { value: number; label: string }) {
   const r = 38;
   const c = 2 * Math.PI * r;
   return (
@@ -198,7 +198,7 @@ function Ring({ value }: { value: number }) {
       </svg>
       <div className="absolute inset-0 grid place-content-center text-center">
         <p className="text-[22px] font-semibold tabular-nums">{value}%</p>
-        <p className="-mt-0.5 text-[11px] text-panel-muted">positivo</p>
+        <p className="-mt-0.5 text-[11px] text-panel-muted">{label}</p>
       </div>
     </div>
   );
@@ -207,6 +207,7 @@ function Ring({ value }: { value: number }) {
 /* ---------- Escena ---------- */
 
 export default function ExecutiveScene() {
+  const t = useI18n().t.executive;
   return (
     <div className="flex h-full">
       <nav aria-hidden className="flex w-[68px] shrink-0 flex-col items-center gap-2 border-r border-panel-glass-border py-5">
@@ -229,30 +230,30 @@ export default function ExecutiveScene() {
       <div className="flex min-w-0 flex-1 flex-col gap-4 p-6">
         <header className="a-fade flex items-start justify-between">
           <div>
-            <p className="text-[19px] font-semibold tracking-[-0.01em]">Dashboard ejecutivo</p>
-            <p className="mt-0.5 text-[12.5px] text-panel-muted">Visión del negocio, últimos 12 meses</p>
+            <p className="text-[19px] font-semibold tracking-[-0.01em]">{t.title}</p>
+            <p className="mt-0.5 text-[12.5px] text-panel-muted">{t.subtitle}</p>
           </div>
           <span className="glass-card flex items-center gap-2 !rounded-full px-3.5 py-1.5 text-[12px] text-panel-muted">
             <Icon className="h-3.5 w-3.5">
               <path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5" />
             </Icon>
-            Actualizado hace 2 min
+            {t.updated}
           </span>
         </header>
 
         <div className="grid grid-cols-5 gap-3">
           {KPIS.map((kpi, i) => (
             <div key={kpi.label} style={d(150 + i * 90)} className="a-rise glass-card p-4">
-              <p className="text-[12px] text-panel-muted">{kpi.label}</p>
+              <p className="text-[12px] text-panel-muted">{t.kpis[i]}</p>
               <p className="mt-1.5 text-[24px] leading-none font-semibold tracking-[-0.01em] tabular-nums">{kpi.value}</p>
-              <Delta value={kpi.delta} />
+              <Delta value={kpi.delta} suffix={t.vsLastMonth} />
               <Sparkline values={kpi.series} delay={450 + i * 90} />
             </div>
           ))}
           <div style={d(510)} className="a-rise glass-card flex flex-col p-4">
-            <p className="text-[12px] text-panel-muted">Riesgo operativo</p>
-            <p className="mt-1.5 text-[24px] leading-none font-semibold">Bajo</p>
-            <p className="mt-1 text-[11.5px] text-panel-muted">Nivel de riesgo, 2 de 10</p>
+            <p className="text-[12px] text-panel-muted">{t.risk}</p>
+            <p className="mt-1.5 text-[24px] leading-none font-semibold">{t.riskValue}</p>
+            <p className="mt-1 text-[11.5px] text-panel-muted">{t.riskLevel}</p>
             <div className="mt-auto h-1.5 rounded-full bg-panel-3">
               <span style={d(900)} className="a-grow-x block h-full w-[22%] rounded-full bg-panel-ink" />
             </div>
@@ -263,39 +264,39 @@ export default function ExecutiveScene() {
           <div style={d(350)} className="a-rise glass-card flex min-h-0 flex-col p-4">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-[14px] font-semibold">Ingresos frente a proyección</p>
+                <p className="text-[14px] font-semibold">{t.chartTitle}</p>
                 <div className="mt-1.5 flex gap-4 text-[11.5px] text-panel-muted">
                   <span className="flex items-center gap-1.5">
                     <span className="h-0.5 w-4 rounded-full bg-panel-ink" />
-                    Ingresos reales
+                    {t.actual}
                   </span>
                   <span className="flex items-center gap-1.5">
                     <svg viewBox="0 0 16 2" aria-hidden className="h-0.5 w-4">
                       <line x1="0" x2="16" y1="1" y2="1" stroke="var(--panel-muted)" strokeWidth="2" strokeDasharray="4 3" />
                     </svg>
-                    Proyección
+                    {t.forecast}
                   </span>
                 </div>
               </div>
               <div style={d(2600)} className="a-rise text-right">
-                <p className="text-[11px] text-panel-muted">Proyección a diciembre</p>
+                <p className="text-[11px] text-panel-muted">{t.forecastDec}</p>
                 <p className="text-[18px] font-semibold tabular-nums">$28.7M</p>
               </div>
             </div>
             <div className="mt-2 min-h-0 flex-1">
-              <RevenueChart />
+              <RevenueChart months={t.months} />
             </div>
           </div>
 
           <div style={d(450)} className="a-rise glass-card flex flex-col p-4">
-            <p className="text-[14px] font-semibold">Hallazgos del modelo</p>
+            <p className="text-[14px] font-semibold">{t.insightsTitle}</p>
             <ul className="mt-3 flex flex-1 flex-col divide-y divide-panel-glass-border">
               {INSIGHTS.map((item, i) => (
                 <li key={i} style={d(1200 + i * 220)} className="a-rise flex flex-1 items-center gap-3 py-2">
                   <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-panel-glass-strong text-panel-ink">
                     <Icon className="h-4 w-4">{item.icon}</Icon>
                   </span>
-                  <span className="text-[12.5px] leading-snug">{item.text}</span>
+                  <span className="text-[12.5px] leading-snug">{t.insights[i]}</span>
                 </li>
               ))}
             </ul>
@@ -306,12 +307,12 @@ export default function ExecutiveScene() {
           <div style={d(550)} className="a-rise glass-card flex items-center gap-5 p-4">
             <Donut />
             <div className="min-w-0 flex-1">
-              <p className="text-[14px] font-semibold">Ingresos por segmento</p>
+              <p className="text-[14px] font-semibold">{t.segmentsTitle}</p>
               <ul className="mt-2.5 space-y-1.5 text-[12px]">
-                {SEGMENTS.map((s) => (
+                {SEGMENTS.map((s, i) => (
                   <li key={s.label} className="flex items-center gap-2">
                     <span className="h-2.5 w-2.5 rounded-[3px]" style={{ background: s.color }} />
-                    <span className="flex-1 text-panel-muted">{s.label}</span>
+                    <span className="flex-1 text-panel-muted">{t.segments[i]}</span>
                     <span className="tabular-nums">{s.value}%</span>
                   </li>
                 ))}
@@ -320,18 +321,18 @@ export default function ExecutiveScene() {
           </div>
 
           <div style={d(650)} className="a-rise glass-card flex items-center gap-5 p-4">
-            <Ring value={82} />
+            <Ring value={82} label={t.sentimentPositive} />
             <div>
-              <p className="text-[14px] font-semibold">Sentimiento de clientes</p>
+              <p className="text-[14px] font-semibold">{t.sentimentTitle}</p>
               <p className="mt-1.5 text-[12px] leading-snug text-panel-muted">
-                Análisis de 3,120 reseñas y tickets de soporte del último mes.
+                {t.sentimentText}
               </p>
             </div>
           </div>
 
           <div style={d(750)} className="a-rise glass-card flex flex-col p-4">
             <div className="flex items-baseline justify-between">
-              <p className="text-[14px] font-semibold">Predicción de demanda</p>
+              <p className="text-[14px] font-semibold">{t.demandTitle}</p>
               <p className="flex items-center gap-1 text-[13px] font-semibold tabular-nums">
                 <Icon className="h-3.5 w-3.5">
                   <path d="M12 19V5M5 12l7-7 7 7" />
@@ -339,7 +340,7 @@ export default function ExecutiveScene() {
                 21%
               </p>
             </div>
-            <p className="text-[11px] text-panel-muted">Próximo trimestre</p>
+            <p className="text-[11px] text-panel-muted">{t.demandPeriod}</p>
             <div className="mt-3 flex h-[62px] items-end gap-1.5">
               {DEMAND.map((h, i) => (
                 <span

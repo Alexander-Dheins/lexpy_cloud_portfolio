@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type CSSProperties } from "react";
+import { useI18n } from "@/components/i18n/I18nProvider";
 
 /* Servicios como un árbol: las ramas son lo que entrego, el tronco es
    cómo lo construyo y la raíz es la infraestructura que lo sostiene.
@@ -247,6 +248,7 @@ function Node({
 }
 
 export default function Services() {
+  const t = useI18n().t.services;
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -270,10 +272,10 @@ export default function Services() {
     <section id="servicios" aria-labelledby="servicios-titulo" className="container-page py-24 sm:py-32">
       <div className="mx-auto max-w-2xl text-center">
         <h2 id="servicios-titulo" className="text-[clamp(2rem,3.6vw,3.25rem)] leading-[1.08] font-semibold tracking-[-0.03em]">
-          En qué puedo ayudarte
+          {t.title}
         </h2>
         <p className="mx-auto mt-4 max-w-[46ch] text-[1.125rem] leading-relaxed text-muted">
-          Todo crece desde la misma base: infraestructura propia y código que se puede mantener.
+          {t.lead}
         </p>
       </div>
 
@@ -289,10 +291,22 @@ export default function Services() {
 
         <div className="mx-auto mt-12 grid max-w-4xl gap-x-12 gap-y-9 sm:grid-cols-2 xl:mt-0 xl:block xl:max-w-none">
           {BRANCHES.map((branch, i) => (
-            <Node key={branch.title} {...branch} delay={1300 + i * 120} />
+            <Node
+              key={branch.title}
+              {...branch}
+              title={t.branches[i].title}
+              text={t.branches[i].text}
+              delay={1300 + i * 120}
+            />
           ))}
           {BASES.map((base, i) => (
-            <Node key={base.title} {...base} delay={1800 + i * 120} />
+            <Node
+              key={base.title}
+              {...base}
+              title={i === 0 ? t.trunk.title : t.root.title}
+              text={i === 0 ? t.trunk.text : t.root.text}
+              delay={1800 + i * 120}
+            />
           ))}
         </div>
       </div>

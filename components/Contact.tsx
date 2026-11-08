@@ -4,11 +4,13 @@ import dynamic from "next/dynamic";
 import { useActionState, useEffect, useId, useRef, useState } from "react";
 import { sendContact } from "@/app/actions/contact";
 import {
-  TOPICS,
+  TOPIC_IDS,
   initialContactState,
+  type ContactErrors,
   type ContactField,
   type ContactValues,
 } from "./contact/state";
+import { useI18n } from "@/components/i18n/I18nProvider";
 
 // WebGL solo existe en el navegador.
 const WinterScene = dynamic(() => import("./contact/WinterScene"), { ssr: false });
@@ -44,11 +46,16 @@ function Field({
 
 function ContactForm({ onSent }: { onSent: (correo: string) => void }) {
   const [state, action, pending] = useActionState(sendContact, initialContactState);
+  const { lang, t: dict } = useI18n();
+  const t = dict.contact;
   const uid = useId();
   const formRef = useRef<HTMLFormElement>(null);
 
   const values: ContactValues = "values" in state ? state.values : {};
-  const errors: ContactValues = state.status === "invalid" ? state.errors : {};
+  const flagged: ContactErrors = state.status === "invalid" ? state.errors : {};
+  const errors: ContactValues = Object.fromEntries(
+    Object.keys(flagged).map((field) => [field, t.errors[field as ContactField]]),
+  );
 
   useEffect(() => {
     if (state.status === "success") {
@@ -67,8 +74,9 @@ function ContactForm({ onSent }: { onSent: (correo: string) => void }) {
 
   return (
     <form ref={formRef} action={action} noValidate className="relative">
+      <input type="hidden" name="lang" value={lang} />
       <div className="grid gap-x-5 sm:grid-cols-2">
-        <Field id={id("nombre")} label="Nombre" error={errors.nombre}>
+        <Field id={id("nombre")} label={t.name} error={errors.nombre}>
           <input
             id={id("nombre")}
             name="nombre"
@@ -81,7 +89,7 @@ function ContactForm({ onSent }: { onSent: (correo: string) => void }) {
             className={`${inputBase} h-12`}
           />
         </Field>
-        <Field id={id("correo")} label="Correo" error={errors.correo}>
+        <Field id={id("correo")} label={t.email} error={errors.correo}>
           <input
             id={id("correo")}
             name="correo"
@@ -97,7 +105,7 @@ function ContactForm({ onSent }: { onSent: (correo: string) => void }) {
         </Field>
       </div>
 
-      <Field id={id("tema")} label="Tipo de proyecto" error={errors.tema}>
+      <Field id={id("tema")} label={t.topic} error={errors.tema}>
         <div className="relative">
           <select
             id={id("tema")}
@@ -109,11 +117,11 @@ function ContactForm({ onSent }: { onSent: (correo: string) => void }) {
             className={`${inputBase} h-12 appearance-none pr-11`}
           >
             <option value="" disabled>
-              Elige una opción
+              {t.topicPlaceholder}
             </option>
-            {TOPICS.map((topic) => (
+            {TOPIC_IDS.map((topic) => (
               <option key={topic} value={topic}>
-                {topic}
+                {t.topics[topic]}
               </option>
             ))}
           </select>
@@ -128,14 +136,14 @@ function ContactForm({ onSent }: { onSent: (correo: string) => void }) {
         </div>
       </Field>
 
-      <Field id={id("mensaje")} label="Qué necesitas" error={errors.mensaje}>
+      <Field id={id("mensaje")} label={t.message} error={errors.mensaje}>
         <textarea
           id={id("mensaje")}
           name="mensaje"
           rows={6}
           required
           defaultValue={values.mensaje}
-          placeholder="Qué quieres lograr, para cuándo y qué sistemas usas hoy."
+          placeholder={t.messagePlaceholder}
           aria-invalid={Boolean(errors.mensaje)}
           aria-describedby={describe("mensaje")}
           className={`${inputBase} resize-y py-3 leading-relaxed`}
@@ -144,28 +152,28 @@ function ContactForm({ onSent }: { onSent: (correo: string) => void }) {
 
       {/* Campo trampa para bots: oculto a personas y lectores de pantalla. */}
       <div aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">
-        <label htmlFor={id("sitio")}>No completar</label>
+        <label htmlFor={id("sitio")}>{t.honeypot}</label>
         <input id={id("sitio")} name="sitio_web" type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
       <div className="mt-2 flex flex-col-reverse items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-[13.5px] text-muted">
-          Tus datos solo se usan para responderte.
+          {t.privacy}
         </p>
         <button
           type="submit"
           disabled={pending}
           className="inline-flex h-12 items-center gap-2 rounded-full bg-ink px-6 text-[15px] font-semibold text-on-ink transition-opacity duration-[var(--dur-short)] hover:opacity-85 disabled:cursor-wait disabled:opacity-70"
         >
-          {pending ? "Enviando…" : "Enviar mensaje"}
+          {pending ? t.sending : t.submit}
         </button>
       </div>
 
       <p role="status" aria-live="polite" className="mt-4 text-[14.5px] text-ink empty:hidden">
         {state.status === "unavailable"
-          ? "El formulario todavía no está conectado al correo. Inténtalo más tarde."
+          ? t.unavailable
           : state.status === "error"
-            ? "No se pudo enviar el mensaje. Intenta de nuevo en unos minutos."
+            ? t.failed
             : ""}
       </p>
     </form>
@@ -173,6 +181,7 @@ function ContactForm({ onSent }: { onSent: (correo: string) => void }) {
 }
 
 export default function Contact() {
+  const t = useI18n().t.contact;
   const [round, setRound] = useState(0);
   const [sentTo, setSentTo] = useState<string | null>(null);
 
@@ -182,7 +191,7 @@ export default function Contact() {
         <div className="stage-matte relative h-[340px] overflow-hidden rounded-[22px] sm:h-[420px] lg:col-span-5 lg:h-auto">
           <WinterScene />
           <p className="pointer-events-none absolute bottom-5 left-6 text-[13px] text-panel-muted">
-            Escena en Three.js, renderizada en tu navegador.
+            {t.sceneCaption}
           </p>
         </div>
 
@@ -191,20 +200,18 @@ export default function Contact() {
             id="contacto-titulo"
             className="text-[clamp(1.75rem,2.8vw,2.5rem)] leading-[1.08] font-semibold tracking-[-0.03em]"
           >
-            Cuéntame qué quieres construir
+            {t.title}
           </h2>
           <p className="mt-3 mb-8 max-w-[46ch] text-[16px] leading-relaxed text-muted">
-            Leo cada mensaje y respondo al correo que dejes.
+            {t.lead}
           </p>
           {sentTo !== null ? (
             <div role="status" className="flex min-h-[360px] flex-col items-start justify-center">
               <p className="text-[clamp(1.5rem,2.4vw,2rem)] leading-tight font-semibold tracking-[-0.02em]">
-                Mensaje enviado.
+                {t.sentTitle}
               </p>
               <p className="mt-3 max-w-[40ch] text-[16px] leading-relaxed text-muted">
-                {sentTo
-                  ? `Te respondo a ${sentTo}. Revisa también la carpeta de spam por si acaso.`
-                  : "Gracias por escribir."}
+                {sentTo ? t.sentText(sentTo) : t.sentThanks}
               </p>
               <button
                 type="button"
@@ -214,7 +221,7 @@ export default function Contact() {
                 }}
                 className="mt-8 text-[15px] font-semibold text-ink underline decoration-rule decoration-2 underline-offset-[6px] transition-colors duration-[var(--dur-short)] hover:decoration-ink"
               >
-                Enviar otro mensaje
+                {t.another}
               </button>
             </div>
           ) : (

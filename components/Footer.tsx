@@ -1,40 +1,28 @@
 import Image from "next/image";
 import logo from "@/public/brand/logo-lineas-blancas.png";
+import { getDict, type Lang } from "@/lib/i18n";
 
 // Año fijo a propósito: el prerender de Next.js rechaza `new Date()` aquí.
 // Súbelo a mano cuando cambie.
 const YEAR = 2026;
 
-const COLUMNS = [
-  {
-    title: "Sitio",
-    links: [
-      { label: "Inicio", href: "#top" },
-      { label: "Servicios", href: "#servicios" },
-      { label: "Contacto", href: "#contacto" },
-    ],
-  },
-  {
-    title: "Servicios",
-    links: [
-      { label: "Desarrollo web y apps", href: "#servicios" },
-      { label: "APIs e integraciones", href: "#servicios" },
-      { label: "Automatización y DevOps", href: "#servicios" },
-      { label: "Consultoría", href: "#servicios" },
-    ],
-  },
-  {
-    title: "Stack",
-    links: [
-      { label: "Next.js y TypeScript" },
-      { label: "Docker y Dokploy" },
-      { label: "PostgreSQL y Redis" },
-      { label: "Cloudflare" },
-    ],
-  },
-];
 
-export default function Footer() {
+export default function Footer({ lang }: { lang: Lang }) {
+  const t = getDict(lang).footer;
+  const columns = [
+    {
+      title: t.site,
+      links: ["#top", "#servicios", "#contacto"].map((href, i) => ({ label: t.siteLinks[i], href: href as string | undefined })),
+    },
+    {
+      title: t.servicesTitle,
+      links: t.servicesLinks.map((label) => ({ label, href: "#servicios" as string | undefined })),
+    },
+    {
+      title: t.stackTitle,
+      links: t.stack.map((label) => ({ label, href: undefined as string | undefined })),
+    },
+  ];
   return (
     <footer className="bg-panel text-panel-ink">
       <div className="container-page pt-20 pb-10">
@@ -45,17 +33,17 @@ export default function Footer() {
               lexpy
             </a>
             <p className="mt-4 max-w-[34ch] text-[15px] leading-relaxed text-panel-muted">
-              Desarrollo de software e infraestructura propia, de la idea al servidor.
+              {t.tagline}
             </p>
             <a
               href="#contacto"
               className="mt-7 inline-flex h-11 items-center rounded-full bg-panel-ink px-5 text-[14px] font-semibold text-panel transition-opacity duration-[var(--dur-short)] hover:opacity-85"
             >
-              Escríbeme
+              {t.cta}
             </a>
           </div>
 
-          {COLUMNS.map((column, i) => (
+          {columns.map((column, i) => (
             <nav
               key={column.title}
               aria-label={column.title}
@@ -65,7 +53,7 @@ export default function Footer() {
               <ul className="mt-4 space-y-2.5 text-[15px]">
                 {column.links.map((link) => (
                   <li key={link.label}>
-                    {"href" in link ? (
+                    {link.href ? (
                       <a
                         href={link.href}
                         className="underline decoration-transparent underline-offset-4 transition-colors duration-[var(--dur-short)] hover:decoration-panel-muted"
@@ -85,9 +73,9 @@ export default function Footer() {
 
         <div className="mt-16 flex flex-col gap-3 border-t border-panel-rule pt-6 text-[13.5px] text-panel-muted sm:flex-row sm:items-center sm:justify-between">
           <span>© {YEAR} lexpy.cloud</span>
-          <span>Desplegado en un VPS propio con Dokploy.</span>
+          <span>{t.deployed}</span>
           <a href="#top" className="transition-colors duration-[var(--dur-short)] hover:text-panel-ink">
-            Volver arriba
+            {t.backToTop}
           </a>
         </div>
       </div>

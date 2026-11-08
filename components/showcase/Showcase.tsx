@@ -10,22 +10,24 @@ import {
   type KeyboardEvent,
 } from "react";
 import ExecutiveScene from "./ExecutiveScene";
+import { useI18n } from "@/components/i18n/I18nProvider";
 import { ApiScene, CoursesScene, DashboardScene, DeployScene } from "./scenes";
 
+type SceneId = "ejecutivo" | "api" | "cursos" | "crm" | "despliegue";
+
 interface Scene {
-  id: string;
-  label: string;
+  id: SceneId;
   Component: ComponentType;
 }
 
 /* Cada desarrollo nuevo se agrega aquí: aparece como una diapositiva
    más del carrusel y como una pestaña debajo. */
 const SCENES: Scene[] = [
-  { id: "ejecutivo", label: "Dashboard ejecutivo", Component: ExecutiveScene },
-  { id: "api", label: "API", Component: ApiScene },
-  { id: "cursos", label: "Cursos", Component: CoursesScene },
-  { id: "crm", label: "CRM", Component: DashboardScene },
-  { id: "despliegue", label: "Despliegue", Component: DeployScene },
+  { id: "ejecutivo", Component: ExecutiveScene },
+  { id: "api", Component: ApiScene },
+  { id: "cursos", Component: CoursesScene },
+  { id: "crm", Component: DashboardScene },
+  { id: "despliegue", Component: DeployScene },
 ];
 
 /* Lienzo de diseño: cada escena se dibuja a este tamaño y se escala
@@ -59,6 +61,8 @@ const roundButton =
   "grid h-10 w-10 shrink-0 place-items-center rounded-full border border-rule text-ink transition-colors duration-[var(--dur-short)] hover:bg-paper-2";
 
 export default function Showcase() {
+  const { t } = useI18n();
+  const s = t.showcase;
   const [active, setActive] = useState(0);
   const [plays, setPlays] = useState<number[]>(() => SCENES.map(() => 0));
   const [userPaused, setUserPaused] = useState<boolean | null>(null);
@@ -123,8 +127,8 @@ export default function Showcase() {
     <div ref={rootRef} className="mx-auto w-full max-w-[1120px] min-w-0">
       <div
         ref={stageRef}
-        aria-roledescription="carrusel"
-        aria-label="Desarrollos"
+        aria-roledescription={s.carousel}
+        aria-label={s.region}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         style={{ aspectRatio: `${CANVAS_W} / ${CANVAS_H}` }}
@@ -144,7 +148,7 @@ export default function Showcase() {
                 role="tabpanel"
                 id={`escena-${scene.id}`}
                 aria-labelledby={`pestana-${scene.id}`}
-                aria-roledescription="diapositiva"
+                aria-roledescription={s.slide}
                 inert={i !== active}
                 className="@container h-full w-full shrink-0"
               >
@@ -158,14 +162,14 @@ export default function Showcase() {
       </div>
 
       <p aria-hidden className="mt-4 text-center text-[14px] text-ink sm:hidden">
-        {SCENES[active].label}
+        {s.tabs[SCENES[active].id]}
       </p>
 
       <div className="mt-2 flex flex-wrap items-center justify-center gap-x-5 gap-y-4 sm:mt-6">
         <button
           type="button"
           onClick={() => show(active - 1)}
-          aria-label="Desarrollo anterior"
+          aria-label={s.prev}
           className={`${roundButton} hidden sm:grid`}
         >
           <Arrow dir="left" />
@@ -173,7 +177,7 @@ export default function Showcase() {
 
         <div
           role="tablist"
-          aria-label="Desarrollos"
+          aria-label={s.region}
           onKeyDown={onTabKey}
           className="grid w-full grid-cols-5 gap-3 sm:flex sm:w-auto sm:flex-wrap sm:justify-center sm:gap-x-5 sm:gap-y-3"
         >
@@ -191,7 +195,7 @@ export default function Showcase() {
                 aria-selected={isActive}
                 aria-controls={`escena-${item.id}`}
                 tabIndex={isActive ? 0 : -1}
-                aria-label={item.label}
+                aria-label={s.tabs[item.id]}
                 onClick={() => show(i)}
                 className="group py-2 text-left sm:w-[9rem] sm:py-0"
               >
@@ -215,7 +219,7 @@ export default function Showcase() {
                     isActive ? "text-ink" : "text-muted group-hover:text-ink"
                   }`}
                 >
-                  {item.label}
+                  {s.tabs[item.id]}
                 </span>
               </button>
             );
@@ -225,7 +229,7 @@ export default function Showcase() {
         <button
           type="button"
           onClick={() => show(active + 1)}
-          aria-label="Desarrollo siguiente"
+          aria-label={s.next}
           className={`${roundButton} hidden sm:grid`}
         >
           <Arrow dir="right" />
@@ -234,7 +238,7 @@ export default function Showcase() {
         <button
           type="button"
           onClick={() => setUserPaused(!paused)}
-          aria-label={paused ? "Reanudar el carrusel" : "Pausar el carrusel"}
+          aria-label={paused ? s.play : s.pause}
           className={roundButton}
         >
           <svg viewBox="0 0 16 16" aria-hidden className="h-3.5 w-3.5">

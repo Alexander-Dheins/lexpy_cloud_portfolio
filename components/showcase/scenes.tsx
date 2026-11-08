@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { useI18n } from "@/components/i18n/I18nProvider";
 
 /* Cada escena es la interfaz de un desarrollo, construida en HTML/CSS.
    Los datos son de muestra: sirven para enseñar la forma del producto,
@@ -24,26 +25,21 @@ function Check({ className = "" }: { className?: string }) {
 /* 1. Panel de gestión (CRM)                                          */
 /* ------------------------------------------------------------------ */
 
-const MONTHS = ["E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
 const BARS = [36, 48, 42, 58, 54, 66, 61, 72, 69, 80, 77, 92];
 const KPIS = [
   { label: "Contactos activos", value: "1,240" },
   { label: "Procesos abiertos", value: "38" },
   { label: "Respuesta media", value: "2.4 h" },
 ];
-const ROWS = [
-  { name: "Solicitud de compra 1042", state: "En revisión", when: "Hoy" },
-  { name: "Contrato de servicio 1039", state: "Aprobado", when: "Ayer" },
-  { name: "Alta de proveedor 1037", state: "Pendiente", when: "Lun" },
-];
 
 export function DashboardScene() {
+  const t = useI18n().t.crm;
   return (
     <div className="flex h-full">
       <aside className="hidden w-40 shrink-0 flex-col border-r border-panel-glass-border p-4 @xl:flex">
         <p className="a-fade mb-6 text-sm font-semibold">crm</p>
         <ul className="space-y-1 text-[13px] text-panel-muted">
-          {["Resumen", "Contactos", "Procesos", "Reportes", "Ajustes"].map(
+          {t.menu.map(
             (item, i) => (
               <li
                 key={item}
@@ -61,11 +57,11 @@ export function DashboardScene() {
 
       <div className="flex min-w-0 flex-1 flex-col gap-5 p-5 @xl:p-6">
         <div className="a-fade flex items-center justify-between">
-          <p className="text-[15px] font-semibold">Resumen</p>
+          <p className="text-[15px] font-semibold">{t.title}</p>
           <div className="flex rounded-md bg-panel-2 p-0.5 text-[12px] text-panel-muted">
-            <span className="px-2 py-0.5">7 días</span>
+            <span className="px-2 py-0.5">{t.range7}</span>
             <span className="rounded bg-panel-3 px-2 py-0.5 text-panel-ink">
-              30 días
+              {t.range30}
             </span>
           </div>
         </div>
@@ -80,7 +76,7 @@ export function DashboardScene() {
               } ${i < 2 ? "pr-4" : ""}`}
             >
               <p className="truncate text-[12px] text-panel-muted">
-                {kpi.label}
+                {t.kpis[i]}
               </p>
               <p className="mt-1 text-[22px] font-semibold tabular-nums @xl:text-[26px]">
                 {kpi.value}
@@ -107,7 +103,7 @@ export function DashboardScene() {
             ))}
           </div>
           <div className="mt-1.5 flex gap-1.5 text-center text-[10.5px] text-panel-muted @xl:gap-2">
-            {MONTHS.map((m, i) => (
+            {t.monthLetters.map((m, i) => (
               <span key={i} className="flex-1">
                 {m}
               </span>
@@ -116,7 +112,7 @@ export function DashboardScene() {
         </div>
 
         <ul className="divide-y divide-panel-rule border-t border-panel-rule text-[12.5px]">
-          {ROWS.map((row, i) => (
+          {t.rows.map((row, i) => (
             <li
               key={row.name}
               style={d(950 + i * 110)}
@@ -148,21 +144,10 @@ const ENDPOINTS = [
   ["DELETE", "/v1/sesiones/:id"],
 ];
 
-const RESPONSE: [number, string][] = [
-  [0, "{"],
-  [1, '"id": "ins_8f2a",'],
-  [1, '"curso": "docker-desde-cero",'],
-  [1, '"usuario": "usr_example",'],
-  [1, '"estado": "activa",'],
-  [1, '"progreso": 0,'],
-  [1, '"creado": "2026-11-07T22:14:03Z"'],
-  [0, "}"],
-];
 
 const REQUEST = [
   '"Authorization": "Bearer ••••••••"',
   '"Content-Type": "application/json"',
-  '"body": { "curso": "docker-desde-cero" }',
 ];
 
 const LATENCY = [
@@ -181,21 +166,22 @@ function JsonLine({ text }: { text: string }) {
 }
 
 export function ApiScene() {
+  const t = useI18n().t.api;
   return (
     <div className="grid h-full grid-rows-[minmax(0,1fr)] @xl:grid-cols-[13rem_1fr]">
       <aside className="hidden flex-col border-r border-panel-rule p-4 @xl:flex">
-        <p className="a-fade mb-4 text-[12px] text-panel-muted">Endpoints</p>
+        <p className="a-fade mb-4 text-[12px] text-panel-muted">{t.endpoints}</p>
         <ul className="space-y-1 font-mono text-[12px]">
-          {ENDPOINTS.map(([method, path], i) => (
+          {ENDPOINTS.map(([method], i) => (
             <li
-              key={path}
+              key={i}
               style={d(60 + i * 60)}
               className={`a-fade flex gap-2 rounded-md px-2 py-1.5 ${
                 i === 1 ? "bg-panel-2" : ""
               }`}
             >
               <span className="w-12 shrink-0 text-panel-muted">{method}</span>
-              <span className="truncate">{path}</span>
+              <span className="truncate">{t.paths[i]}</span>
             </li>
           ))}
         </ul>
@@ -204,7 +190,7 @@ export function ApiScene() {
       <div className="flex min-w-0 flex-col gap-4 p-5 @xl:p-6">
         <div className="a-fade flex flex-wrap items-center gap-x-3 gap-y-2">
           <p className="font-mono text-[13.5px]">
-            <span className="text-panel-muted">POST</span> /v1/inscripciones
+            <span className="text-panel-muted">POST</span> {t.paths[1]}
           </p>
           <span
             style={d(500)}
@@ -221,9 +207,9 @@ export function ApiScene() {
         </div>
 
         <div style={d(250)} className="a-rise glass-card p-4">
-          <p className="mb-2 text-[12px] text-panel-muted">Petición</p>
+          <p className="mb-2 text-[12px] text-panel-muted">{t.request}</p>
           <pre className="font-mono text-[12.5px] leading-6">
-            {REQUEST.map((line) => (
+            {[...REQUEST, t.body].map((line) => (
               <span key={line} className="block truncate">
                 <JsonLine text={line} />
               </span>
@@ -232,15 +218,15 @@ export function ApiScene() {
         </div>
 
         <div className="min-h-0 flex-1 overflow-hidden glass-card p-4">
-          <p className="mb-2 text-[12px] text-panel-muted">Respuesta</p>
+          <p className="mb-2 text-[12px] text-panel-muted">{t.response}</p>
           <pre className="font-mono text-[12.5px] leading-6">
-            {RESPONSE.map(([indent, text], i) => (
+            {["{", ...t.json, "}"].map((text, i, all) => (
               <span
                 key={i}
                 style={d(700 + i * 120)}
                 className="a-fade block truncate"
               >
-                {indent ? "  " : ""}
+                {i > 0 && i < all.length - 1 ? "  " : ""}
                 <JsonLine text={text} />
               </span>
             ))}
@@ -249,8 +235,8 @@ export function ApiScene() {
 
         <div>
           <div className="mb-2 flex items-baseline justify-between text-[12px] text-panel-muted">
-            <span>Latencia p95, últimas 24 h</span>
-            <span className="font-mono tabular-nums">61 ms máx.</span>
+            <span>{t.latency}</span>
+            <span className="font-mono tabular-nums">{t.latencyMax}</span>
           </div>
           <div className="flex h-10 items-end gap-[3px]">
             {LATENCY.map((h, i) => (
@@ -281,26 +267,15 @@ const LESSONS = [
   { title: "Docker Compose" },
 ];
 
-const TERMINAL = [
-  "$ docker volume create datos",
-  "datos",
-  "$ docker run -d -v datos:/var/lib/postgresql/data postgres:16",
-  "3f9c2e1b7a04",
-  "$ docker volume inspect datos",
-  "[",
-  '  { "Name": "datos", "Driver": "local",',
-  '    "Mountpoint": "/var/lib/docker/volumes/datos/_data" }',
-  "]",
-  "$ docker exec -it 3f9c psql -U postgres -c '\\l'",
-];
 
 export function CoursesScene() {
+  const t = useI18n().t.courses;
   return (
     <div className="grid h-full grid-rows-[minmax(0,1fr)] gap-5 p-5 @xl:grid-cols-[1fr_13.5rem] @xl:p-6">
       <div className="flex min-h-0 min-w-0 flex-col">
         <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden glass-card">
           <div className="flex-1 space-y-1.5 overflow-hidden p-4 font-mono text-[12px] leading-5 text-panel-muted @xl:p-5">
-            {TERMINAL.map((line, i) => (
+            {t.terminal.map((line, i) => (
               <p
                 key={i}
                 style={d(300 + i * 220)}
@@ -342,19 +317,19 @@ export function CoursesScene() {
         </div>
 
         <div className="a-rise mt-4" style={d(200)}>
-          <p className="text-[15px] font-semibold">3. Volúmenes y persistencia</p>
+          <p className="text-[15px] font-semibold">{t.lessonTitle}</p>
           <p className="mt-0.5 text-[12.5px] text-panel-muted">
-            Docker desde cero, lección 3 de 5
+            {t.lessonMeta}
           </p>
         </div>
       </div>
 
       <aside className="hidden min-w-0 flex-col @xl:flex">
-        <p className="a-fade mb-3 text-[12px] text-panel-muted">Contenido</p>
+        <p className="a-fade mb-3 text-[12px] text-panel-muted">{t.contents}</p>
         <ol className="space-y-1">
           {LESSONS.map((lesson, i) => (
             <li
-              key={lesson.title}
+              key={i}
               style={d(250 + i * 90)}
               className={`a-rise flex items-center gap-2.5 rounded-md px-2 py-2 text-[12.5px] ${
                 lesson.current ? "bg-panel-2" : ""
@@ -371,15 +346,15 @@ export function CoursesScene() {
               >
                 {lesson.done ? <Check className="h-3 w-3" /> : null}
               </span>
-              <span className="truncate">{lesson.title}</span>
+              <span className="truncate">{t.lessons[i]}</span>
             </li>
           ))}
         </ol>
 
         <div className="mt-auto">
           <div className="mb-2 flex justify-between text-[12px] text-panel-muted">
-            <span>Tu avance</span>
-            <span className="tabular-nums">2 de 5</span>
+            <span>{t.progress}</span>
+            <span className="tabular-nums">{t.progressValue}</span>
           </div>
           <div className="h-1 rounded-full bg-panel-3">
             <span
@@ -397,29 +372,17 @@ export function CoursesScene() {
 /* 4. Despliegue (Dokploy en el VPS)                                  */
 /* ------------------------------------------------------------------ */
 
-const STEPS = ["Push", "Build", "Imagen", "Deploy", "SSL"];
-
-const LOGS = [
-  ["22:14:00", "Webhook de GitHub recibido, push a master"],
-  ["22:14:01", "Clonando lexpy_cloud_portfolio"],
-  ["22:14:09", "Nixpacks: node 20, npm ci"],
-  ["22:15:10", "367 paquetes instalados"],
-  ["22:15:32", "next build, compilado sin errores"],
-  ["22:15:41", "Imagen lexpycloud-portfoliocloud creada"],
-  ["22:15:48", "Contenedor en marcha, puerto 3000"],
-  ["22:15:49", "Traefik: ruta lexpy.cloud lista"],
-  ["22:15:51", "Certificado Let's Encrypt para lexpy.cloud"],
+const LOG_TIMES = [
+  "22:14:00", "22:14:01", "22:14:09", "22:15:10", "22:15:32",
+  "22:15:41", "22:15:48", "22:15:49", "22:15:51",
 ];
 
-const STATS = [
-  { label: "CPU", value: 34 },
-  { label: "Memoria", value: 41 },
-  { label: "Disco", value: 22 },
-];
+const STAT_VALUES = [34, 41, 22];
 
 const STEP_GAP = 520;
 
 export function DeployScene() {
+  const t = useI18n().t.deploy;
   return (
     <div className="flex h-full flex-col gap-5 p-5 @xl:p-6">
       <div className="a-fade flex flex-wrap items-center gap-x-3 gap-y-1.5">
@@ -436,8 +399,8 @@ export function DeployScene() {
           style={d(250)}
           className="a-grow-x absolute top-3 right-[10%] left-[10%] h-px bg-panel-ink [animation-duration:2300ms] [animation-timing-function:linear]"
         />
-        {STEPS.map((step, i) => (
-          <div key={step} className="relative flex flex-col items-center gap-2">
+        {t.steps.map((step, i) => (
+          <div key={i} className="relative flex flex-col items-center gap-2">
             <span className="relative grid h-6 w-6 place-items-center rounded-full border border-panel-4 bg-panel">
               <span
                 style={d(250 + i * STEP_GAP)}
@@ -452,13 +415,13 @@ export function DeployScene() {
       </div>
 
       <div className="min-h-0 flex-1 overflow-hidden glass-card p-4 font-mono text-[12px] leading-6">
-        {LOGS.map(([time, text], i) => (
+        {t.logs.map((text, i) => (
           <p
-            key={time}
+            key={i}
             style={d(300 + i * 270)}
             className="a-fade flex gap-3"
           >
-            <span className="shrink-0 text-panel-muted tabular-nums">{time}</span>
+            <span className="shrink-0 text-panel-muted tabular-nums">{LOG_TIMES[i]}</span>
             <span className="truncate">{text}</span>
           </p>
         ))}
@@ -466,18 +429,18 @@ export function DeployScene() {
 
       <div>
         <p className="mb-3 text-[12px] text-panel-muted">
-          VPS KVM 2, 2 vCPU y 8 GB de RAM
+          {t.server}
         </p>
         <div className="grid grid-cols-3 gap-4 @xl:gap-6">
-          {STATS.map((stat, i) => (
-            <div key={stat.label} className="min-w-0">
+          {STAT_VALUES.map((value, i) => (
+            <div key={i} className="min-w-0">
               <div className="mb-1.5 flex justify-between text-[12px]">
-                <span className="text-panel-muted">{stat.label}</span>
-                <span className="tabular-nums">{stat.value}%</span>
+                <span className="text-panel-muted">{t.stats[i]}</span>
+                <span className="tabular-nums">{value}%</span>
               </div>
               <div className="h-1 rounded-full bg-panel-3">
                 <span
-                  style={{ ...d(2700 + i * 120), width: `${stat.value}%` }}
+                  style={{ ...d(2700 + i * 120), width: `${value}%` }}
                   className="a-grow-x block h-full rounded-full bg-panel-ink"
                 />
               </div>

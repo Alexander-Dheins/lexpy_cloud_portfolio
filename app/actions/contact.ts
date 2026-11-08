@@ -2,10 +2,13 @@
 
 import nodemailer from "nodemailer";
 import {
-  TOPICS,
+  TOPIC_IDS,
+  type ContactErrors,
   type ContactState,
   type ContactValues,
+  type TopicId,
 } from "@/components/contact/state";
+import { dictionaries } from "@/lib/i18n";
 
 /* Envía el formulario de contacto por SMTP.
    Variables de entorno (se configuran en Dokploy, pestaña Environment):
@@ -36,14 +39,11 @@ export async function sendContact(
     mensaje: read(formData, "mensaje", 5000),
   };
 
-  const errors: ContactValues = {};
-  if ((values.nombre ?? "").length < 2) errors.nombre = "Escribe tu nombre.";
-  if (!EMAIL.test(values.correo ?? ""))
-    errors.correo = "Revisa el correo, parece incompleto.";
-  if (!TOPICS.includes(values.tema ?? ""))
-    errors.tema = "Elige el tipo de proyecto.";
-  if ((values.mensaje ?? "").length < 20)
-    errors.mensaje = "Cuéntame un poco más, al menos 20 caracteres.";
+  const errors: ContactErrors = {};
+  if ((values.nombre ?? "").length < 2) errors.nombre = true;
+  if (!EMAIL.test(values.correo ?? "")) errors.correo = true;
+  if (!TOPIC_IDS.includes(values.tema as TopicId)) errors.tema = true;
+  if ((values.mensaje ?? "").length < 20) errors.mensaje = true;
 
   if (Object.keys(errors).length > 0) {
     return { status: "invalid", errors, values };
@@ -56,6 +56,9 @@ export async function sendContact(
   }
 
   const port = Number(SMTP_PORT ?? 465);
+  // El correo me llega siempre en español, con el idioma del visitante anotado.
+  const topic = dictionaries.es.contact.topics[values.tema as TopicId];
+  const lang = read(formData, "lang", 4) === "en" ? "inglés" : "español";
 
   try {
     const transport = nodemailer.createTransport({
@@ -69,11 +72,12 @@ export async function sendContact(
       from: CONTACT_FROM || SMTP_USER,
       to: CONTACT_TO,
       replyTo: { name: values.nombre ?? "", address: values.correo ?? "" },
-      subject: `lexpy.cloud: ${values.tema}, de ${values.nombre}`,
+      subject: `lexpy.cloud: ${topic}, de ${values.nombre}`,
       text: [
         `Nombre: ${values.nombre}`,
         `Correo: ${values.correo}`,
-        `Tipo de proyecto: ${values.tema}`,
+        `Tipo de proyecto: ${topic}`,
+        `Idioma del sitio: ${lang}`,
         "",
         values.mensaje,
       ].join("\n"),
