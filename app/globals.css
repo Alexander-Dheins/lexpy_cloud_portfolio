@@ -83,6 +83,10 @@ body {
   overflow-x: clip;
 }
 
+html {
+  scroll-padding-top: 88px;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;

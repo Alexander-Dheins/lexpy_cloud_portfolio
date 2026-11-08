@@ -18,16 +18,16 @@ export default function Hero() {
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-x-7 gap-y-4">
             <a
-              href="#proyectos"
+              href="#contacto"
               className="inline-flex h-12 items-center rounded-full bg-ink px-6 text-[15px] font-semibold text-on-ink transition-opacity duration-[var(--dur-short)] hover:opacity-85"
             >
-              Ver proyectos
+              Hablemos de tu proyecto
             </a>
             <a
-              href="#contacto"
+              href="#servicios"
               className="text-[15px] font-semibold text-ink underline decoration-rule decoration-2 underline-offset-[6px] transition-colors duration-[var(--dur-short)] hover:decoration-ink"
             >
-              Escríbeme
+              Ver servicios
             </a>
           </div>
         </div>
