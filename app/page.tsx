@@ -3,6 +3,7 @@ import Hero from "@/components/Hero";
 import Services from "@/components/Services";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
+import FloatingActions from "@/components/FloatingActions";
 import { getGithubStars } from "@/lib/github";
 
 export default async function Home() {
@@ -16,6 +17,7 @@ export default async function Home() {
         <Contact />
       </main>
       <Footer />
+      <FloatingActions />
     </>
   );
 }
