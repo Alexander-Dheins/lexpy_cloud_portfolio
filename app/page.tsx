@@ -3,11 +3,13 @@ import Hero from "@/components/Hero";
 import Services from "@/components/Services";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
+import { getGithubStars } from "@/lib/github";
 
-export default function Home() {
+export default async function Home() {
+  const stars = await getGithubStars();
   return (
     <>
-      <Navbar />
+      <Navbar stars={stars} />
       <main className="flex-1">
         <Hero />
         <Services />
