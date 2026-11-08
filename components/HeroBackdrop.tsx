@@ -9,7 +9,7 @@ export default function HeroBackdrop() {
       aria-hidden="true"
       className="hero-backdrop pointer-events-none absolute inset-0 overflow-hidden select-none"
     >
-      <div className="flex h-full flex-col justify-center gap-5 opacity-[0.17] blur-[2.5px] sm:gap-7">
+      <div className="flex h-full flex-col justify-center gap-5 opacity-[0.3] blur-[1px] sm:gap-7">
         {TECH_ROWS.map((row, i) => (
           <div key={i} className="overflow-hidden">
             <div
