@@ -3,19 +3,19 @@ import Showcase from "./showcase/Showcase";
 export default function Hero() {
   return (
     <section id="top" aria-labelledby="hero-titulo">
-      <div className="container-page grid items-center gap-12 pt-6 pb-20 lg:min-h-[calc(100svh-72px)] lg:grid-cols-12 lg:gap-10 lg:py-10">
-        <div className="min-w-0 lg:col-span-5">
+      <div className="container-page pt-10 pb-24 lg:pt-14">
+        <div className="mx-auto max-w-3xl text-center">
           <h1
             id="hero-titulo"
-            className="max-w-[13ch] text-[clamp(2.6rem,4.6vw,4.25rem)] leading-[1.03] font-semibold tracking-[-0.035em]"
+            className="mx-auto max-w-[17ch] text-[clamp(2.5rem,5vw,4.25rem)] leading-[1.03] font-semibold tracking-[-0.035em]"
           >
             Construyo software y lo pongo en producción.
           </h1>
-          <p className="mt-6 max-w-[38ch] text-[1.1875rem] leading-relaxed text-muted">
+          <p className="mx-auto mt-5 max-w-[44ch] text-[1.1875rem] leading-relaxed text-muted">
             Paneles, APIs, plataformas de cursos e infraestructura, de la idea
             al servidor.
           </p>
-          <div className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-4">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-7 gap-y-4">
             <a
               href="#proyectos"
               className="inline-flex h-12 items-center rounded-full bg-ink px-6 text-[15px] font-semibold text-on-ink transition-opacity duration-[var(--dur-short)] hover:opacity-85"
@@ -31,7 +31,7 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="min-w-0 lg:col-span-7">
+        <div className="mt-12 lg:mt-14">
           <Showcase />
         </div>
       </div>

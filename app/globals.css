@@ -20,6 +20,9 @@
   --panel-rule: oklch(33% 0.005 265);
   --panel-ink: oklch(94% 0.003 265);
   --panel-muted: oklch(70% 0.004 265);
+  --panel-glass: oklch(98% 0.002 265 / 0.045);
+  --panel-glass-strong: oklch(98% 0.002 265 / 0.075);
+  --panel-glass-border: oklch(98% 0.002 265 / 0.09);
 
   /* Cristal (solo para la barra de navegación y tarjetas) */
   --glass-bg: oklch(93% 0.003 265 / 0.62);
@@ -55,6 +58,9 @@
   --color-panel-rule: var(--panel-rule);
   --color-panel-ink: var(--panel-ink);
   --color-panel-muted: var(--panel-muted);
+  --color-panel-glass: var(--panel-glass);
+  --color-panel-glass-strong: var(--panel-glass-strong);
+  --color-panel-glass-border: var(--panel-glass-border);
   --font-sans: var(--font-body);
   --font-mono: var(--font-code);
 }
@@ -140,6 +146,22 @@ body {
   border-bottom: 1px solid var(--glass-border);
 }
 
+/* Escenario mate del carrusel y tarjetas semitransparentes */
+.stage-matte {
+  background:
+    radial-gradient(90% 70% at 50% 0%, var(--panel-2), transparent 70%),
+    var(--panel);
+  box-shadow: 0 1px 2px oklch(20% 0.01 265 / 0.08), 0 24px 60px -24px oklch(20% 0.01 265 / 0.45);
+}
+
+.glass-card {
+  background: var(--panel-glass);
+  border: 1px solid var(--panel-glass-border);
+  border-radius: 14px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
 /* ---------- Escaparate: animaciones (solo transform y opacity) ---------- */
 
 @keyframes a-rise {
@@ -174,6 +196,22 @@ body {
   }
 }
 
+@keyframes a-wipe {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes a-turn {
+  from {
+    opacity: 0;
+    transform: rotate(-60deg);
+  }
+}
+
 @keyframes a-progress {
   from {
     transform: scaleX(0);
@@ -187,6 +225,8 @@ body {
 .a-fade,
 .a-grow-y,
 .a-grow-x,
+.a-wipe,
+.a-turn,
 .a-pop {
   animation-duration: 560ms;
   animation-timing-function: var(--ease-out);
@@ -209,6 +249,15 @@ body {
 .a-grow-x {
   animation-name: a-grow-x;
   transform-origin: left;
+  animation-duration: 900ms;
+}
+.a-wipe {
+  animation-name: a-wipe;
+  animation-duration: 1400ms;
+  animation-timing-function: var(--ease-in-out);
+}
+.a-turn {
+  animation-name: a-turn;
   animation-duration: 900ms;
 }
 .a-pop {

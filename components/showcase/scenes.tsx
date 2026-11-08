@@ -27,9 +27,9 @@ function Check({ className = "" }: { className?: string }) {
 const MONTHS = ["E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
 const BARS = [36, 48, 42, 58, 54, 66, 61, 72, 69, 80, 77, 92];
 const KPIS = [
-  { label: "Contactos activos", value: "1 240" },
+  { label: "Contactos activos", value: "1,240" },
   { label: "Procesos abiertos", value: "38" },
-  { label: "Respuesta media", value: "2,4 h" },
+  { label: "Respuesta media", value: "2.4 h" },
 ];
 const ROWS = [
   { name: "Solicitud de compra 1042", state: "En revisión", when: "Hoy" },
@@ -40,7 +40,7 @@ const ROWS = [
 export function DashboardScene() {
   return (
     <div className="flex h-full">
-      <aside className="hidden w-40 shrink-0 flex-col border-r border-panel-rule p-4 @xl:flex">
+      <aside className="hidden w-40 shrink-0 flex-col border-r border-panel-glass-border p-4 @xl:flex">
         <p className="a-fade mb-6 text-sm font-semibold">crm</p>
         <ul className="space-y-1 text-[13px] text-panel-muted">
           {["Resumen", "Contactos", "Procesos", "Reportes", "Ajustes"].map(
@@ -220,7 +220,7 @@ export function ApiScene() {
           </span>
         </div>
 
-        <div style={d(250)} className="a-rise rounded-lg border border-panel-rule p-4">
+        <div style={d(250)} className="a-rise glass-card p-4">
           <p className="mb-2 text-[12px] text-panel-muted">Petición</p>
           <pre className="font-mono text-[12.5px] leading-6">
             {REQUEST.map((line) => (
@@ -231,7 +231,7 @@ export function ApiScene() {
           </pre>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-hidden rounded-lg bg-panel-2 p-4">
+        <div className="min-h-0 flex-1 overflow-hidden glass-card p-4">
           <p className="mb-2 text-[12px] text-panel-muted">Respuesta</p>
           <pre className="font-mono text-[12.5px] leading-6">
             {RESPONSE.map(([indent, text], i) => (
@@ -298,7 +298,7 @@ export function CoursesScene() {
   return (
     <div className="grid h-full grid-rows-[minmax(0,1fr)] gap-5 p-5 @xl:grid-cols-[1fr_13.5rem] @xl:p-6">
       <div className="flex min-h-0 min-w-0 flex-col">
-        <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg bg-panel-2">
+        <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden glass-card">
           <div className="flex-1 space-y-1.5 overflow-hidden p-4 font-mono text-[12px] leading-5 text-panel-muted @xl:p-5">
             {TERMINAL.map((line, i) => (
               <p
@@ -451,7 +451,7 @@ export function DeployScene() {
         ))}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-hidden rounded-lg bg-panel-2 p-4 font-mono text-[12px] leading-6">
+      <div className="min-h-0 flex-1 overflow-hidden glass-card p-4 font-mono text-[12px] leading-6">
         {LOGS.map(([time, text], i) => (
           <p
             key={time}
