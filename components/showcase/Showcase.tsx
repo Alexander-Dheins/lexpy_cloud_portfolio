@@ -10,14 +10,19 @@ import {
   type KeyboardEvent,
 } from "react";
 import ExecutiveScene from "./ExecutiveScene";
+import MineopsScene from "./MineopsScene";
+import { ActivosScene, FlotaScene, LegalScene, PlanningScene } from "./ProjectScenes";
+import ProjectCards, { type ProjectId } from "./ProjectCards";
 import { useI18n } from "@/components/i18n/I18nProvider";
 import { ApiScene, CoursesScene, DashboardScene, DeployScene } from "./scenes";
 
-type SceneId = "ejecutivo" | "api" | "cursos" | "crm" | "despliegue";
+type SceneId = "ejecutivo" | "api" | "cursos" | "crm" | "despliegue" | ProjectId;
 
 interface Scene {
   id: SceneId;
   Component: ComponentType;
+  /* Los proyectos extra no tienen pestaña: se abren desde su tarjeta. */
+  extra?: boolean;
 }
 
 /* Cada desarrollo nuevo se agrega aquí: aparece como una diapositiva
@@ -28,7 +33,14 @@ const SCENES: Scene[] = [
   { id: "cursos", Component: CoursesScene },
   { id: "crm", Component: DashboardScene },
   { id: "despliegue", Component: DeployScene },
+  { id: "mineops", Component: MineopsScene, extra: true },
+  { id: "legal", Component: LegalScene, extra: true },
+  { id: "planning", Component: PlanningScene, extra: true },
+  { id: "flota", Component: FlotaScene, extra: true },
+  { id: "activos", Component: ActivosScene, extra: true },
 ];
+
+const TAB_COUNT = SCENES.filter((scene) => !scene.extra).length;
 
 /* Lienzo de diseño: cada escena se dibuja a este tamaño y se escala
    para caber en el ancho disponible. */
@@ -114,11 +126,11 @@ export default function Showcase() {
       ArrowRight: active + 1,
       ArrowLeft: active - 1,
       Home: 0,
-      End: SCENES.length - 1,
+      End: TAB_COUNT - 1,
     };
     if (!(event.key in moves)) return;
     event.preventDefault();
-    const next = (moves[event.key] + SCENES.length) % SCENES.length;
+    const next = (moves[event.key] + TAB_COUNT) % TAB_COUNT;
     show(next);
     tabRefs.current[next]?.focus();
   }
@@ -181,7 +193,7 @@ export default function Showcase() {
           onKeyDown={onTabKey}
           className="grid w-full grid-cols-5 gap-3 sm:flex sm:w-auto sm:flex-wrap sm:justify-center sm:gap-x-5 sm:gap-y-3"
         >
-          {SCENES.map((item, i) => {
+          {SCENES.filter((scene) => !scene.extra).map((item, i) => {
             const isActive = i === active;
             return (
               <button
@@ -194,7 +206,7 @@ export default function Showcase() {
                 id={`pestana-${item.id}`}
                 aria-selected={isActive}
                 aria-controls={`escena-${item.id}`}
-                tabIndex={isActive ? 0 : -1}
+                tabIndex={isActive || (active >= TAB_COUNT && i === 0) ? 0 : -1}
                 aria-label={s.tabs[item.id]}
                 onClick={() => show(i)}
                 className="group py-2 text-left sm:w-[9rem] sm:py-0"
@@ -253,6 +265,21 @@ export default function Showcase() {
           </svg>
         </button>
       </div>
+
+      <ProjectCards
+        activeId={SCENES[active].id}
+        running={running}
+        playKey={plays[active]}
+        duration={DURATION}
+        onPick={(id) => {
+          show(SCENES.findIndex((scene) => scene.id === id));
+          stageRef.current?.scrollIntoView({
+            behavior: reducedMotion ? "auto" : "smooth",
+            block: "center",
+          });
+        }}
+        onDone={() => show(active + 1)}
+      />
     </div>
   );
 }
