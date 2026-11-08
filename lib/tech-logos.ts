@@ -1,0 +1,81 @@
+import {
+  siCloudflare,
+  siCplusplus,
+  siDart,
+  siDjango,
+  siDocker,
+  siFastapi,
+  siFlutter,
+  siGit,
+  siGithub,
+  siGnubash,
+  siGo,
+  siJavascript,
+  siKotlin,
+  siKubernetes,
+  siLaravel,
+  siLinux,
+  siMysql,
+  siNestjs,
+  siNextdotjs,
+  siNginx,
+  siNodedotjs,
+  siPhp,
+  siPostgresql,
+  siPython,
+  siReact,
+  siRedis,
+  siRust,
+  siTailwindcss,
+  siThreedotjs,
+  siTypescript,
+  type SimpleIcon,
+} from "simple-icons";
+
+export type TechLogo = { title: string; path: string };
+
+const pick = (icons: SimpleIcon[]): TechLogo[] =>
+  icons.map((i) => ({
+    title: i.title === "GNU Bash" ? "Bash" : i.title,
+    path: i.path,
+  }));
+
+// Brand marks from simple-icons (CC0): languages, frameworks, infrastructure.
+export const TECH_ROWS: TechLogo[][] = [
+  pick([
+    siJavascript,
+    siTypescript,
+    siPython,
+    siPhp,
+    siGo,
+    siKotlin,
+    siRust,
+    siDart,
+    siCplusplus,
+    siGnubash,
+  ]),
+  pick([
+    siReact,
+    siNextdotjs,
+    siNodedotjs,
+    siLaravel,
+    siDjango,
+    siFastapi,
+    siNestjs,
+    siTailwindcss,
+    siThreedotjs,
+    siFlutter,
+  ]),
+  pick([
+    siDocker,
+    siPostgresql,
+    siMysql,
+    siRedis,
+    siLinux,
+    siNginx,
+    siCloudflare,
+    siGit,
+    siGithub,
+    siKubernetes,
+  ]),
+];

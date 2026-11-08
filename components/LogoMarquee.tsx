@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export type MarqueeLogo = { title: string; path: string };
+import type { TechLogo as MarqueeLogo } from "@/lib/tech-logos";
 
 type Props = {
   rows: MarqueeLogo[][];

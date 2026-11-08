@@ -383,6 +383,12 @@ body {
       mask-image: none;
     }
   }
+  .hero-backdrop {
+    mask-image:
+      linear-gradient(to right, transparent, #000 18%, #000 82%, transparent),
+      linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
+    mask-composite: intersect;
+  }
   .marquee-track {
     animation: a-marquee var(--speed, 40s) linear infinite;
     animation-direction: var(--dir, normal);
