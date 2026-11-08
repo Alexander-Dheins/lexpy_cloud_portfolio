@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useActionState, useEffect, useId, useRef, useState } from "react";
 import { sendContact } from "@/app/actions/contact";
 import {
@@ -8,6 +9,9 @@ import {
   type ContactField,
   type ContactValues,
 } from "./contact/state";
+
+// WebGL solo existe en el navegador.
+const WinterScene = dynamic(() => import("./contact/WinterScene"), { ssr: false });
 
 const FIELD_ORDER: ContactField[] = ["nombre", "correo", "tema", "mensaje"];
 
@@ -174,30 +178,26 @@ export default function Contact() {
 
   return (
     <section id="contacto" aria-labelledby="contacto-titulo" className="container-page pt-12 pb-28 sm:pb-36">
-      <div className="grid gap-12 lg:grid-cols-12 lg:gap-10">
-        <div className="lg:col-span-5">
-          <h2
-            id="contacto-titulo"
-            className="max-w-[14ch] text-[clamp(2rem,3.6vw,3.25rem)] leading-[1.08] font-semibold tracking-[-0.03em]"
-          >
-            Cuéntame qué quieres construir
-          </h2>
-          <p className="mt-4 max-w-[40ch] text-[1.125rem] leading-relaxed text-muted">
-            Leo cada mensaje y respondo al correo que dejes.
+      <div className="grid gap-6 lg:grid-cols-12 lg:gap-6">
+        <div className="stage-matte relative h-[340px] overflow-hidden rounded-[22px] sm:h-[420px] lg:col-span-5 lg:h-auto">
+          <WinterScene />
+          <p className="pointer-events-none absolute bottom-5 left-6 text-[13px] text-panel-muted">
+            Escena en Three.js, renderizada en tu navegador.
           </p>
-          <div className="mt-10 border-t border-rule pt-6">
-            <p className="text-[15px] font-semibold">Para darte una respuesta útil, incluye:</p>
-            <ul className="mt-3 space-y-2 text-[15px] text-muted">
-              <li>Qué quieres lograr y para quién.</li>
-              <li>Para cuándo lo necesitas.</li>
-              <li>Qué sistemas o herramientas usas hoy.</li>
-            </ul>
-          </div>
         </div>
 
         <div className="rounded-[22px] bg-paper-2 p-6 sm:p-9 lg:col-span-7">
+          <h2
+            id="contacto-titulo"
+            className="text-[clamp(1.75rem,2.8vw,2.5rem)] leading-[1.08] font-semibold tracking-[-0.03em]"
+          >
+            Cuéntame qué quieres construir
+          </h2>
+          <p className="mt-3 mb-8 max-w-[46ch] text-[16px] leading-relaxed text-muted">
+            Leo cada mensaje y respondo al correo que dejes.
+          </p>
           {sentTo !== null ? (
-            <div role="status" className="flex min-h-[420px] flex-col items-start justify-center">
+            <div role="status" className="flex min-h-[360px] flex-col items-start justify-center">
               <p className="text-[clamp(1.5rem,2.4vw,2rem)] leading-tight font-semibold tracking-[-0.02em]">
                 Mensaje enviado.
               </p>
