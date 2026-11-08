@@ -39,19 +39,17 @@ export function DashboardScene() {
       <aside className="hidden w-40 shrink-0 flex-col border-r border-panel-glass-border p-4 @xl:flex">
         <p className="a-fade mb-6 text-sm font-semibold">crm</p>
         <ul className="space-y-1 text-[13px] text-panel-muted">
-          {t.menu.map(
-            (item, i) => (
-              <li
-                key={item}
-                style={d(80 + i * 60)}
-                className={`a-fade rounded-md px-2.5 py-1.5 ${
-                  i === 0 ? "bg-panel-2 text-panel-ink" : ""
-                }`}
-              >
-                {item}
-              </li>
-            ),
-          )}
+          {t.menu.map((item, i) => (
+            <li
+              key={item}
+              style={d(80 + i * 60)}
+              className={`a-fade rounded-md px-2.5 py-1.5 ${
+                i === 0 ? "bg-panel-2 text-panel-ink" : ""
+              }`}
+            >
+              {item}
+            </li>
+          ))}
         </ul>
       </aside>
 
@@ -144,7 +142,6 @@ const ENDPOINTS = [
   ["DELETE", "/v1/sesiones/:id"],
 ];
 
-
 const REQUEST = [
   '"Authorization": "Bearer ••••••••"',
   '"Content-Type": "application/json"',
@@ -170,7 +167,9 @@ export function ApiScene() {
   return (
     <div className="grid h-full grid-rows-[minmax(0,1fr)] @xl:grid-cols-[13rem_1fr]">
       <aside className="hidden flex-col border-r border-panel-rule p-4 @xl:flex">
-        <p className="a-fade mb-4 text-[12px] text-panel-muted">{t.endpoints}</p>
+        <p className="a-fade mb-4 text-[12px] text-panel-muted">
+          {t.endpoints}
+        </p>
         <ul className="space-y-1 font-mono text-[12px]">
           {ENDPOINTS.map(([method], i) => (
             <li
@@ -267,7 +266,6 @@ const LESSONS = [
   { title: "Docker Compose" },
 ];
 
-
 export function CoursesScene() {
   const t = useI18n().t.courses;
   return (
@@ -294,8 +292,22 @@ export function CoursesScene() {
               aria-hidden
               className="h-4 w-4 shrink-0 text-panel-ink"
             >
-              <rect x="3" y="2.5" width="3.5" height="11" rx="1" fill="currentColor" />
-              <rect x="9.5" y="2.5" width="3.5" height="11" rx="1" fill="currentColor" />
+              <rect
+                x="3"
+                y="2.5"
+                width="3.5"
+                height="11"
+                rx="1"
+                fill="currentColor"
+              />
+              <rect
+                x="9.5"
+                y="2.5"
+                width="3.5"
+                height="11"
+                rx="1"
+                fill="currentColor"
+              />
             </svg>
             <div className="relative h-1 flex-1 rounded-full bg-panel-3">
               <span
@@ -373,8 +385,15 @@ export function CoursesScene() {
 /* ------------------------------------------------------------------ */
 
 const LOG_TIMES = [
-  "22:14:00", "22:14:01", "22:14:09", "22:15:10", "22:15:32",
-  "22:15:41", "22:15:48", "22:15:49", "22:15:51",
+  "22:14:00",
+  "22:14:01",
+  "22:14:09",
+  "22:15:10",
+  "22:15:32",
+  "22:15:41",
+  "22:15:48",
+  "22:15:49",
+  "22:15:51",
 ];
 
 const STAT_VALUES = [34, 41, 22];
@@ -390,7 +409,9 @@ export function DeployScene() {
         <span className="rounded bg-panel-2 px-1.5 py-0.5 font-mono text-[11.5px] text-panel-muted">
           master
         </span>
-        <span className="font-mono text-[11.5px] text-panel-muted">cd6f7bc</span>
+        <span className="font-mono text-[11.5px] text-panel-muted">
+          cd6f7bc
+        </span>
       </div>
 
       <div className="relative grid grid-cols-5">
@@ -416,21 +437,17 @@ export function DeployScene() {
 
       <div className="min-h-0 flex-1 overflow-hidden glass-card p-4 font-mono text-[12px] leading-6">
         {t.logs.map((text, i) => (
-          <p
-            key={i}
-            style={d(300 + i * 270)}
-            className="a-fade flex gap-3"
-          >
-            <span className="shrink-0 text-panel-muted tabular-nums">{LOG_TIMES[i]}</span>
+          <p key={i} style={d(300 + i * 270)} className="a-fade flex gap-3">
+            <span className="shrink-0 text-panel-muted tabular-nums">
+              {LOG_TIMES[i]}
+            </span>
             <span className="truncate">{text}</span>
           </p>
         ))}
       </div>
 
       <div>
-        <p className="mb-3 text-[12px] text-panel-muted">
-          {t.server}
-        </p>
+        <p className="mb-3 text-[12px] text-panel-muted">{t.server}</p>
         <div className="grid grid-cols-3 gap-4 @xl:gap-6">
           {STAT_VALUES.map((value, i) => (
             <div key={i} className="min-w-0">

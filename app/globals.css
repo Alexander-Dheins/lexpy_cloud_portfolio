@@ -364,6 +364,19 @@ body {
 }
 }
 
+@keyframes a-scan {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(150px);
+  }
+}
+
+.a-scan {
+  animation: a-scan 1.8s var(--ease-in-out) infinite alternate;
+}
+
 /* Footer logo marquee: each track holds its list twice, so -50% loops seamlessly. */
 @keyframes a-marquee {
   from {
