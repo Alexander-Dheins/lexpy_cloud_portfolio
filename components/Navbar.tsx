@@ -1,6 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
+import logo from "@/public/brand/logo-lineas-negras.png";
 
 const LINKS = [
   { href: "#servicios", label: "Servicios" },
@@ -29,7 +31,7 @@ export default function Navbar() {
           aria-label="lexpy, ir al inicio"
           className="flex items-center gap-2.5 text-[19px] font-semibold tracking-[-0.02em]"
         >
-          <span aria-hidden className="inline-block h-3.5 w-3.5 rounded-[4px] bg-ink" />
+          <Image src={logo} alt="" width={36} height={36} priority className="h-9 w-9" />
           lexpy
         </a>
 

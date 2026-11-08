@@ -1,3 +1,6 @@
+import Image from "next/image";
+import logo from "@/public/brand/logo-lineas-blancas.png";
+
 // Año fijo a propósito: el prerender de Next.js rechaza `new Date()` aquí.
 // Súbelo a mano cuando cambie.
 const YEAR = 2026;
@@ -37,8 +40,8 @@ export default function Footer() {
       <div className="container-page pt-20 pb-10">
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-12 lg:gap-10">
           <div className="sm:col-span-2 lg:col-span-4">
-            <a href="#top" className="flex items-center gap-2.5 text-[21px] font-semibold tracking-[-0.02em]">
-              <span aria-hidden className="inline-block h-4 w-4 rounded-[4px] bg-panel-ink" />
+            <a href="#top" className="flex items-center gap-3 text-[21px] font-semibold tracking-[-0.02em]">
+              <Image src={logo} alt="" width={44} height={44} className="h-11 w-11" />
               lexpy
             </a>
             <p className="mt-4 max-w-[34ch] text-[15px] leading-relaxed text-panel-muted">
