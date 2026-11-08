@@ -31,14 +31,11 @@ const PROJECTS: Project[] = [
 
 export default function Projects() {
   return (
-    <section id="proyectos" className="relative mx-auto max-w-6xl px-6 py-20 sm:py-28">
+    <section id="proyectos" className="container-page py-20 sm:py-28">
       <div className="mb-12 max-w-xl">
-        <h2 className="text-sm font-medium uppercase tracking-widest text-muted">
-          Proyectos
-        </h2>
-        <p className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+        <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
           Lo que se está construyendo
-        </p>
+        </h2>
         <p className="mt-3 text-sm text-muted">
           Cada proyecto corre en su propio subdominio, desplegado sobre la
           misma infraestructura self-hosted.
@@ -49,14 +46,14 @@ export default function Projects() {
         {PROJECTS.map((project) => (
           <GlassCard key={project.title} className="flex flex-col p-7">
             <div className="mb-6 flex items-center justify-between">
-              <span className="rounded-full border border-foreground/10 px-2.5 py-1 font-mono text-[11px] text-muted">
+              <span className="rounded-full border border-rule px-2.5 py-1 font-mono text-[11px] text-muted">
                 {project.tag}
               </span>
               <span
                 className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
                   project.status === "En vivo"
-                    ? "bg-accent-blue/10 text-accent-blue"
-                    : "bg-foreground/5 text-muted"
+                    ? "bg-ink text-on-ink"
+                    : "bg-ink/5 text-muted"
                 }`}
               >
                 {project.status}

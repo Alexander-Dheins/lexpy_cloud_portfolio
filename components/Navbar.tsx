@@ -20,24 +20,26 @@ export default function Navbar() {
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-colors ${
-        scrolled ? "glass-nav" : "bg-transparent"
+      className={`sticky top-0 z-50 transition-colors duration-[var(--dur-short)] ${
+        scrolled ? "glass-nav" : "border-b border-transparent"
       }`}
     >
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <a href="#top" className="flex items-center gap-2 font-semibold tracking-tight">
-          <span className="inline-block h-2.5 w-2.5 rounded-sm bg-foreground" />
-          <span className="inline-block h-2.5 w-2.5 rounded-sm bg-accent-red" />
-          <span className="inline-block h-2.5 w-2.5 rounded-sm bg-accent-blue" />
-          <span className="ml-2 text-lg">lexpy</span>
+      <nav className="container-page flex h-[72px] items-center justify-between">
+        <a
+          href="#top"
+          aria-label="lexpy, ir al inicio"
+          className="flex items-center gap-2.5 text-[19px] font-semibold tracking-[-0.02em]"
+        >
+          <span aria-hidden className="inline-block h-3.5 w-3.5 rounded-[4px] bg-ink" />
+          lexpy
         </a>
 
-        <div className="hidden items-center gap-8 text-sm text-muted sm:flex">
+        <div className="hidden items-center gap-9 text-[15px] text-muted sm:flex">
           {LINKS.map((link) => (
             <a
               key={link.href}
               href={link.href}
-              className="transition-colors hover:text-foreground"
+              className="transition-colors duration-[var(--dur-short)] hover:text-ink"
             >
               {link.label}
             </a>
@@ -46,7 +48,7 @@ export default function Navbar() {
 
         <a
           href="#contacto"
-          className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-85"
+          className="inline-flex h-10 items-center rounded-full border border-ink/25 px-4 text-[14px] font-semibold text-ink transition-colors duration-[var(--dur-short)] hover:bg-paper-2"
         >
           Hablemos
         </a>

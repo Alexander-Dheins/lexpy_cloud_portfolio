@@ -1,82 +1,232 @@
+/* lexpy · escala de grises · fondo gris claro, tinta casi negra, escaparate en carbón.
+   Todos los colores, fuentes y tiempos pasan por los tokens de :root. */
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #18181b;
-  --muted: #52525b;
-  --muted-light: #71717a;
-  --line: rgba(24, 24, 27, 0.08);
-  --accent-red: #ef4444;
-  --accent-blue: #3b82f6;
-  --glass-bg: rgba(255, 255, 255, 0.55);
-  --glass-bg-strong: rgba(255, 255, 255, 0.72);
-  --glass-border: rgba(24, 24, 27, 0.09);
-  --glass-dark-bg: rgba(24, 24, 27, 0.04);
+  /* Página */
+  --paper: oklch(89% 0.003 265);
+  --paper-2: oklch(92.5% 0.003 265);
+  --paper-3: oklch(85.5% 0.004 265);
+  --ink: oklch(21% 0.006 265);
+  --muted: oklch(43% 0.006 265);
+  --rule: oklch(78% 0.004 265);
+  --on-ink: oklch(96% 0.002 265);
+
+  /* Escaparate (superficie oscura) */
+  --panel: oklch(23.5% 0.005 265);
+  --panel-2: oklch(28% 0.005 265);
+  --panel-3: oklch(34% 0.005 265);
+  --panel-4: oklch(46% 0.005 265);
+  --panel-rule: oklch(33% 0.005 265);
+  --panel-ink: oklch(94% 0.003 265);
+  --panel-muted: oklch(70% 0.004 265);
+
+  /* Cristal (solo para la barra de navegación y tarjetas) */
+  --glass-bg: oklch(93% 0.003 265 / 0.62);
+  --glass-bg-strong: oklch(94% 0.003 265 / 0.78);
+  --glass-border: oklch(21% 0.006 265 / 0.1);
+
+  /* Tipografía */
+  --font-body: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif;
+  --font-code: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo,
+    Consolas, monospace;
+
+  /* Movimiento */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --dur-long: 420ms;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-paper-3: var(--paper-3);
+  --color-ink: var(--ink);
   --color-muted: var(--muted);
-  --color-muted-light: var(--muted-light);
-  --color-accent-red: var(--accent-red);
-  --color-accent-blue: var(--accent-blue);
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-    Roboto, Helvetica, Arial, sans-serif;
-  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --color-rule: var(--rule);
+  --color-on-ink: var(--on-ink);
+  --color-panel: var(--panel);
+  --color-panel-2: var(--panel-2);
+  --color-panel-3: var(--panel-3);
+  --color-panel-4: var(--panel-4);
+  --color-panel-rule: var(--panel-rule);
+  --color-panel-ink: var(--panel-ink);
+  --color-panel-muted: var(--panel-muted);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-code);
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-html {
-  scroll-behavior: smooth;
+html,
+body {
+  overflow-x: clip;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-synthesis: none;
 }
 
-/* Glassmorphism, light mode, slightly opaque */
+@layer base {
+  h1,
+  h2,
+  h3 {
+    text-wrap-style: balance;
+    overflow-wrap: break-word;
+    min-width: 0;
+  }
+
+  p {
+    text-wrap-style: pretty;
+  }
+}
+
+:where(a, button, [role="tab"], [tabindex]):focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--on-ink);
+}
+
+@layer components {
+/* Contenedor único: crece el margen, no el contenido. */
+.container-page {
+  width: 100%;
+  max-width: calc(1240px + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  --gutter: clamp(20px, 4vw, 56px);
+}
+
+/* Cristal, en gris */
 .glass {
   background: var(--glass-bg);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
   border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 32px rgba(24, 24, 27, 0.06);
 }
 
 .glass-strong {
   background: var(--glass-bg-strong);
-  backdrop-filter: blur(22px) saturate(140%);
-  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  backdrop-filter: blur(22px) saturate(120%);
+  -webkit-backdrop-filter: blur(22px) saturate(120%);
   border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 32px rgba(24, 24, 27, 0.07);
 }
 
 .glass-nav {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
   border-bottom: 1px solid var(--glass-border);
 }
 
-.text-gradient-accent {
-  background: linear-gradient(90deg, #18181b 0%, #3f3f46 55%, var(--accent-red) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+/* ---------- Escaparate: animaciones (solo transform y opacity) ---------- */
+
+@keyframes a-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
 }
 
-.noise-bg {
-  background-image: radial-gradient(circle at 1px 1px, rgba(24,24,27,0.06) 1px, transparent 0);
-  background-size: 22px 22px;
+@keyframes a-fade {
+  from {
+    opacity: 0;
+  }
 }
 
-::selection {
-  background: rgba(239, 68, 68, 0.18);
-  color: var(--foreground);
+@keyframes a-grow-y {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+@keyframes a-grow-x {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes a-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+@keyframes a-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.a-rise,
+.a-fade,
+.a-grow-y,
+.a-grow-x,
+.a-pop {
+  animation-duration: 560ms;
+  animation-timing-function: var(--ease-out);
+  animation-fill-mode: both;
+  animation-delay: calc(var(--d, 0) * 1ms);
+}
+
+.a-rise {
+  animation-name: a-rise;
+}
+.a-fade {
+  animation-name: a-fade;
+  animation-duration: 420ms;
+}
+.a-grow-y {
+  animation-name: a-grow-y;
+  transform-origin: bottom;
+  animation-duration: 700ms;
+}
+.a-grow-x {
+  animation-name: a-grow-x;
+  transform-origin: left;
+  animation-duration: 900ms;
+}
+.a-pop {
+  animation-name: a-pop;
+  animation-duration: 380ms;
+}
+
+.a-progress {
+  transform-origin: left;
+  animation: a-progress var(--dur, 7000ms) linear forwards;
+}
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *:not(.keep-motion),
+  *:not(.keep-motion)::before,
+  *:not(.keep-motion)::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }

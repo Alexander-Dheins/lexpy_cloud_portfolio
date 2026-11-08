@@ -2,15 +2,15 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Lexpy | Desarrollo & Infraestructura",
+  title: "lexpy, desarrollo de software e infraestructura",
   description:
-    "Portafolio de servicios — desarrollo de software, automatización e infraestructura self-hosted.",
+    "Desarrollo paneles, APIs, plataformas de cursos e infraestructura propia, de la idea al servidor.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="es" className="h-full antialiased">
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      <body className="min-h-full flex flex-col bg-paper text-ink">
         {children}
       </body>
     </html>

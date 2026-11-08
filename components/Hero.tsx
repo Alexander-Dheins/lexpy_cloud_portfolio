@@ -1,56 +1,38 @@
-"use client";
-
-import { useRef } from "react";
-import dynamic from "next/dynamic";
-import type { HeroSceneHandle } from "./three/HeroScene";
-
-// Three.js touches `window`/WebGL, so it can only run on the client.
-const HeroScene = dynamic(() => import("./three/HeroScene"), { ssr: false });
+import Showcase from "./showcase/Showcase";
 
 export default function Hero() {
-  const sceneRef = useRef<HeroSceneHandle>(null);
-
   return (
-    <section id="top" className="relative overflow-hidden">
-      <div className="noise-bg pointer-events-none absolute inset-0 opacity-60" />
-
-      <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-8 px-6 pt-10 pb-6 sm:pt-16 md:grid-cols-2 md:gap-4">
-        <div className="relative z-10 order-2 md:order-1">
-          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-white/60 px-3 py-1 text-xs font-medium text-muted backdrop-blur">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent-red" />
-            Disponible para nuevos proyectos
-          </p>
-
-          <h1 className="text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl">
-            Construyo y despliego
-            <br />
-            <span className="text-gradient-accent">software e infraestructura</span>
+    <section id="top" aria-labelledby="hero-titulo">
+      <div className="container-page grid items-center gap-12 pt-6 pb-20 lg:min-h-[calc(100svh-72px)] lg:grid-cols-12 lg:gap-10 lg:py-10">
+        <div className="min-w-0 lg:col-span-5">
+          <h1
+            id="hero-titulo"
+            className="max-w-[13ch] text-[clamp(2.6rem,4.6vw,4.25rem)] leading-[1.03] font-semibold tracking-[-0.035em]"
+          >
+            Construyo software y lo pongo en producción.
           </h1>
-
-          <p className="mt-5 max-w-md text-base leading-relaxed text-muted">
-            Ingeniero de sistemas enfocado en desarrollo de software,
-            automatización y infraestructura self-hosted — de la idea al
-            servidor en producción.
+          <p className="mt-6 max-w-[38ch] text-[1.1875rem] leading-relaxed text-muted">
+            Paneles, APIs, plataformas de cursos e infraestructura, de la idea
+            al servidor.
           </p>
-
-          <div className="mt-8 flex flex-wrap items-center gap-4">
+          <div className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-4">
             <a
               href="#proyectos"
-              className="rounded-full bg-foreground px-5 py-3 text-sm font-medium text-white transition-opacity hover:opacity-85"
+              className="inline-flex h-12 items-center rounded-full bg-ink px-6 text-[15px] font-semibold text-on-ink transition-opacity duration-[var(--dur-short)] hover:opacity-85"
             >
               Ver proyectos
             </a>
-            <button
-              onClick={() => sceneRef.current?.replay()}
-              className="rounded-full border border-foreground/15 bg-white/50 px-5 py-3 text-sm font-medium text-foreground backdrop-blur transition-colors hover:bg-white/80"
+            <a
+              href="#contacto"
+              className="text-[15px] font-semibold text-ink underline decoration-rule decoration-2 underline-offset-[6px] transition-colors duration-[var(--dur-short)] hover:decoration-ink"
             >
-              ↻ Repetir transformación
-            </button>
+              Escríbeme
+            </a>
           </div>
         </div>
 
-        <div className="relative order-1 aspect-square w-full md:order-2">
-          <HeroScene ref={sceneRef} />
+        <div className="min-w-0 lg:col-span-7">
+          <Showcase />
         </div>
       </div>
     </section>
