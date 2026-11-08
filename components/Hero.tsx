@@ -7,9 +7,10 @@ export default function Hero() {
         <div className="mx-auto max-w-3xl text-center">
           <h1
             id="hero-titulo"
+            lang="en"
             className="mx-auto max-w-[17ch] text-[clamp(2.5rem,5vw,4.25rem)] leading-[1.03] font-semibold tracking-[-0.035em]"
           >
-            Construyo software y lo pongo en producción.
+            From development to production.
           </h1>
           <p className="mx-auto mt-5 max-w-[44ch] text-[1.1875rem] leading-relaxed text-muted">
             Paneles, APIs, plataformas de cursos e infraestructura, de la idea
