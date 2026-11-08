@@ -33,8 +33,8 @@ const COLUMNS = [
 
 export default function Footer() {
   return (
-    <footer className="overflow-hidden bg-panel text-panel-ink">
-      <div className="container-page pt-20">
+    <footer className="bg-panel text-panel-ink">
+      <div className="container-page pt-20 pb-10">
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-12 lg:gap-10">
           <div className="sm:col-span-2 lg:col-span-4">
             <a href="#top" className="flex items-center gap-2.5 text-[21px] font-semibold tracking-[-0.02em]">
@@ -80,19 +80,13 @@ export default function Footer() {
         </div>
 
 
-        <div className="mt-20 flex flex-col gap-3 border-t border-panel-rule pt-6 text-[13.5px] text-panel-muted sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-16 flex flex-col gap-3 border-t border-panel-rule pt-6 text-[13.5px] text-panel-muted sm:flex-row sm:items-center sm:justify-between">
           <span>© {YEAR} lexpy.cloud</span>
           <span>Desplegado en un VPS propio con Dokploy.</span>
           <a href="#top" className="transition-colors duration-[var(--dur-short)] hover:text-panel-ink">
             Volver arriba
           </a>
         </div>
-        <p
-          aria-hidden
-          className="mt-12 -mb-[0.2em] text-[clamp(5.5rem,22vw,19rem)] leading-[0.78] font-semibold tracking-[-0.065em] text-panel-3 select-none"
-        >
-          lexpy
-        </p>
       </div>
     </footer>
   );
