@@ -364,6 +364,36 @@ body {
 }
 }
 
+/* Footer logo marquee: each track holds its list twice, so -50% loops seamlessly. */
+@keyframes a-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@layer components {
+  .marquee-row {
+    mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-row {
+      mask-image: none;
+    }
+  }
+  .marquee-track {
+    animation: a-marquee var(--speed, 40s) linear infinite;
+    animation-direction: var(--dir, normal);
+  }
+  .marquee:hover .marquee-track,
+  .marquee:focus-within .marquee-track,
+  .marquee[data-paused="true"] .marquee-track {
+    animation-play-state: paused;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *:not(.keep-motion),
   *:not(.keep-motion)::before,
