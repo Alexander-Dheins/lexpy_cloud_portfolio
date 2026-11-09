@@ -18,7 +18,6 @@ export default function Footer({ lang }: { lang: Lang }) {
               <Image src={logo} alt="" width={44} height={44} className="h-11 w-11" />
               lexpy
             </a>
-            <p className="max-w-[32ch] text-[15px] leading-relaxed text-panel-muted">{t.tagline}</p>
           </div>
           <a
             href="#contacto"

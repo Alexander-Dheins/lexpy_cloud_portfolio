@@ -610,8 +610,6 @@ const es = {
     },
   },
   footer: {
-    tagline:
-      "Desarrollo de software e infraestructura propia, de la idea al servidor.",
     cta: "Escríbeme",
     backToTop: "Volver arriba",
   },
@@ -1225,8 +1223,6 @@ const en: Dict = {
     },
   },
   footer: {
-    tagline:
-      "Software development and self-hosted infrastructure, from idea to server.",
     cta: "Write to me",
     backToTop: "Back to top",
   },
