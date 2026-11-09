@@ -14,6 +14,7 @@ const C = {
   barkDark: 0x553621,
   root: 0x8a6240,
   rootFine: 0xa67c52,
+  node: 0xf2c14e,
   leaves: [0x2f6b3a, 0x3f8a45, 0x58a84a, 0x7cc257, 0xa5d667],
   grass: 0x79b84f,
   grassDark: 0x5c9a40,
@@ -105,8 +106,15 @@ function noise(x: number, y: number, z: number) {
 }
 
 /* Tubo que se afina de r0 a r1 a lo largo de una curva. */
-function limb(points: THREE.Vector3[], r0: number, r1: number, power = 1, radial = 8, segments = 14) {
-  const curve = new THREE.CatmullRomCurve3(points);
+function limb(
+  path: THREE.Vector3[] | THREE.Curve<THREE.Vector3>,
+  r0: number,
+  r1: number,
+  power = 1,
+  radial = 8,
+  segments = 14,
+) {
+  const curve = Array.isArray(path) ? new THREE.CatmullRomCurve3(path) : path;
   const frames = curve.computeFrenetFrames(segments, false);
   const positions: number[] = [];
   const indices: number[] = [];
@@ -139,6 +147,31 @@ function limb(points: THREE.Vector3[], r0: number, r1: number, power = 1, radial
   geometry.setIndex(indices);
   geometry.computeVertexNormals();
   return geometry;
+}
+
+/* Recorrido sinuoso de una raíz: primero se abre bajo la tierra y luego
+   baja, serpenteando hacia los lados como una raíz de verdad. */
+function rootCurve(start: THREE.Vector3, tip: THREE.Vector3, seed: number, wiggle: number) {
+  const flat = new THREE.Vector3(tip.x - start.x, 0, tip.z - start.z);
+  const side = new THREE.Vector3(-flat.z, 0, flat.x).normalize();
+  const steps = 6;
+  const points: THREE.Vector3[] = [];
+  for (let k = 0; k <= steps; k++) {
+    const t = k / steps;
+    const out = Math.pow(t, 0.75);
+    const down = Math.pow(t, 1.7);
+    const bend = Math.sin(t * Math.PI) * wiggle;
+    const sway = (noise(seed, k, 1) - 0.5) * 2 * bend;
+    const lift = (noise(seed, k, 2) - 0.5) * bend * 0.7;
+    points.push(
+      new THREE.Vector3(
+        start.x + (tip.x - start.x) * out + side.x * sway,
+        start.y + (tip.y - start.y) * down + lift,
+        start.z + (tip.z - start.z) * out + side.z * sway,
+      ),
+    );
+  }
+  return new THREE.CatmullRomCurve3(points);
 }
 
 /* Masa de follaje: icosaedro con los vértices desplazados. */
@@ -282,30 +315,60 @@ export default function TreeScene({ labels }: { labels: string[] }) {
       trunk.add(branch);
     });
 
-    /* Raíces: crecen hacia abajo desde la base del tronco */
+    /* Raíces: crecen hacia abajo desde la base del tronco. Cada raíz
+       principal serpentea, se ramifica en raíces secundarias y raicillas,
+       y las que llevan etiqueta terminan en un nodo: por ellas sube un
+       pulso hacia el tronco, como datos por la infraestructura. */
     const roots = new THREE.Group();
     tree.add(roots);
-    const rootMaterial = mat(C.root);
-    const fineMaterial = mat(C.rootFine);
-    const rootPath = (tip: THREE.Vector3, wobble: number) => {
-      const start = new THREE.Vector3(tip.x * 0.08, -0.05, tip.z * 0.08);
-      const a = new THREE.Vector3(tip.x * 0.35, -0.28, tip.z * 0.4);
-      const b = new THREE.Vector3(tip.x * 0.72, tip.y * 0.6 + wobble, tip.z * 0.8);
-      return [start, a, b, tip];
+    const rootMaterial = mat(C.root, { flatShading: false });
+    const fineMaterial = mat(C.rootFine, { flatShading: false });
+    const nodeMaterial = new THREE.MeshStandardMaterial({
+      color: C.node,
+      emissive: C.node,
+      emissiveIntensity: 0.55,
+      roughness: 0.5,
+    });
+    const nodeGeometry = new THREE.SphereGeometry(0.07, 14, 10);
+    const pulseGeometry = new THREE.SphereGeometry(0.038, 10, 8);
+    const pulses: { mesh: THREE.Mesh; curve: THREE.Curve<THREE.Vector3>; offset: number }[] = [];
+    const at = new THREE.Vector3();
+    const tangent = new THREE.Vector3();
+
+    /* Rama que sale de un punto de la curva madre, hacia un lado y abajo. */
+    const offshoot = (parent: THREE.Curve<THREE.Vector3>, t: number, seed: number, length: number, radius: number, depth: number) => {
+      parent.getPointAt(t, at);
+      parent.getTangentAt(t, tangent);
+      const turn = (noise(seed, 3, 7) - 0.5) * 2.4;
+      const direction = new THREE.Vector3(tangent.x, 0, tangent.z).applyAxisAngle(THREE.Object3D.DEFAULT_UP, turn).normalize();
+      const end = at.clone().addScaledVector(direction, length);
+      end.y = at.y - length * (0.45 + noise(seed, 5, 9) * 0.5);
+      const curve = rootCurve(at.clone(), end, seed, length * 0.22);
+      roots.add(new THREE.Mesh(limb(curve, radius, radius * 0.22, 1.1, 6, 12), depth === 0 ? rootMaterial : fineMaterial));
+      if (depth < 1) {
+        offshoot(curve, 0.45, seed + 11, length * 0.6, radius * 0.5, depth + 1);
+        offshoot(curve, 0.8, seed + 23, length * 0.45, radius * 0.4, depth + 1);
+      }
     };
+
     [...ROOT_TIPS, ...BACK_ROOTS].forEach((tipArray, i) => {
       const tip = new THREE.Vector3(...tipArray);
-      const root = new THREE.Mesh(limb(rootPath(tip, (noise(i, 2, 9) - 0.5) * 0.2), 0.16, 0.025, 1.5, 7, 14), rootMaterial);
-      roots.add(root);
-      /* Raicilla que se desprende a mitad de camino */
-      const from = new THREE.Vector3(tip.x * 0.55, tip.y * 0.5, tip.z * 0.6);
-      const to = new THREE.Vector3(
-        tip.x * 0.6 + (noise(i, 4, 1) - 0.5) * 0.7,
-        tip.y * 0.95 - 0.25,
-        tip.z * 0.7 + (noise(i, 6, 3) - 0.5) * 0.6,
-      );
-      const fine = new THREE.Mesh(limb([from, from.clone().lerp(to, 0.5).setY((from.y + to.y) / 2 - 0.06), to], 0.04, 0.008, 1, 5, 6), fineMaterial);
-      roots.add(fine);
+      const start = new THREE.Vector3(tip.x * 0.06, -0.04, tip.z * 0.06);
+      const curve = rootCurve(start, tip, i + 1, 0.3);
+      roots.add(new THREE.Mesh(limb(curve, 0.19, 0.04, 1.25, 9, 28), rootMaterial));
+      offshoot(curve, 0.34, i * 7 + 2, 0.62, 0.07, 0);
+      offshoot(curve, 0.58, i * 7 + 4, 0.52, 0.055, 0);
+      offshoot(curve, 0.8, i * 7 + 6, 0.36, 0.04, 1);
+
+      if (i < ROOT_TIPS.length) {
+        const node = new THREE.Mesh(nodeGeometry, nodeMaterial);
+        node.position.copy(tip);
+        roots.add(node);
+        const pulse = new THREE.Mesh(pulseGeometry, nodeMaterial);
+        pulse.visible = false;
+        roots.add(pulse);
+        pulses.push({ mesh: pulse, curve, offset: noise(i, 31, 7) });
+      }
     });
 
     /* Copa */
@@ -402,6 +465,18 @@ export default function TreeScene({ labels }: { labels: string[] }) {
         );
         leaf.mesh.rotation.set(time * 1.4 + leaf.phase, time * 0.9 + leaf.phase, Math.sin(time * 2 + leaf.phase) * 0.8);
         leaf.material.opacity = leafFade * Math.min(1, cycle * 8) * Math.min(1, (1 - cycle) * 8);
+      });
+
+      /* Pulsos: van de la punta de cada raíz hacia el tronco */
+      pulses.forEach((pulse) => {
+        const cycle = (time * 0.22 + pulse.offset) % 1;
+        pulse.mesh.visible = !reduced && g >= 1;
+        /* Recorre la raíz desde la punta hasta poco antes de la tierra y
+           se ensancha con ella, como un bulto de luz que sube. */
+        const t = 1 - cycle * 0.8;
+        pulse.curve.getPointAt(t, pulse.mesh.position);
+        const radius = 0.04 + 0.15 * Math.pow(1 - t, 1.25);
+        pulse.mesh.scale.setScalar((radius * 1.22 * Math.min(1, cycle * 6, (1 - cycle) * 6)) / 0.038);
       });
 
       const auto = reduced ? 0.25 : Math.sin(time * 0.3) * 0.32;
