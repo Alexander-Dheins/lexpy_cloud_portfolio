@@ -3,26 +3,52 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
-/* Diorama invernal en grises: montañas low-poly sobre una base, teleférico
-   con dos cabinas que suben y bajan, refugio iluminado, luna y nieve.
-   WebGL no lee los tokens OKLCH, así que la paleta gris vive aquí. */
+/* Diorama invernal a color con ciclo de día y noche: montañas low-poly
+   sobre una base, teleférico con dos cabinas, refugio iluminado y nieve.
+   El sol cruza el cielo y se oculta tras las montañas, luego sale la luna;
+   el cielo y la luz cambian con el atardecer y el amanecer.
+   WebGL no lee los tokens OKLCH, así que la paleta vive aquí. */
 
 const C = {
-  snow: 0xc9cbd0,
-  snowSide: 0x8f9298,
-  slabTop: 0xb8bac0,
-  tree: 0x3a3c41,
-  treeLight: 0x4b4e54,
-  trunk: 0x2a2b2f,
-  steel: 0x2c2e33,
-  gondola: 0xe6e7ea,
-  window: 0x2b2d31,
-  cabin: 0x6b6e74,
-  roof: 0x2e3035,
-  glow: 0xf2f1ee,
-  moon: 0xeeeeef,
-  flake: 0xf4f4f5,
+  snow: 0xf3f7fc,
+  snowSide: 0x7d8fa6,
+  slabTop: 0xe6edf5,
+  tree: 0x2c6a47,
+  treeLight: 0x3f8a5a,
+  trunk: 0x5a3b26,
+  steel: 0x56616f,
+  gondola: 0xd9483b,
+  window: 0x1f2c44,
+  cabin: 0x9c5a35,
+  roof: 0x7c2f2a,
+  glow: 0xffd27a,
+  moon: 0xf3f1e4,
+  sun: 0xffd45e,
+  flake: 0xffffff,
 };
+
+/* Cielo (arriba y abajo) y luces para noche, día y crepúsculo. */
+const SKY = {
+  nightTop: new THREE.Color(0x060a1e),
+  nightBottom: new THREE.Color(0x1c2756),
+  dayTop: new THREE.Color(0x3f97de),
+  dayBottom: new THREE.Color(0xc4e6f8),
+  duskTop: new THREE.Color(0x3d3c80),
+  duskBottom: new THREE.Color(0xf7995a),
+  hemiNight: new THREE.Color(0x6076c0),
+  hemiDay: new THREE.Color(0xffffff),
+  groundNight: new THREE.Color(0x141a3a),
+  groundDay: new THREE.Color(0xa9b8c8),
+  sunHigh: new THREE.Color(0xfff4de),
+  sunLow: new THREE.Color(0xff9150),
+  moonLight: new THREE.Color(0xa9c2ff),
+  windowDay: new THREE.Color(0x3b4a63),
+  windowNight: new THREE.Color(0xffd27a),
+};
+
+const CYCLE_SECONDS = 36;
+/* El ciclo arranca de día, con el sol ya alto. */
+const START_PHASE = 0.24;
 
 const W = 10;
 const D = 8;
@@ -149,6 +175,7 @@ function makeCabin() {
   const light = new THREE.PointLight(C.glow, 1.3, 1.8, 1.8);
   light.position.set(0.12, 0.3, 0.6);
   group.add(light);
+  group.userData = { windowPane, light };
   return group;
 }
 
@@ -195,25 +222,37 @@ export default function WinterScene() {
       camera.position.copy(target).addScaledVector(dir, distance);
       camera.lookAt(target);
       camera.updateMatrixWorld();
-      // Luna fija en la esquina superior derecha del encuadre
-      const depth = distance + 14;
-      const halfH = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * depth;
-      const halfW = halfH * camera.aspect;
-      const forward = new THREE.Vector3();
-      camera.getWorldDirection(forward);
-      const right = new THREE.Vector3().crossVectors(forward, camera.up).normalize();
-      const up = new THREE.Vector3().crossVectors(right, forward).normalize();
-      moon.position
-        .copy(camera.position)
-        .addScaledVector(forward, depth)
-        .addScaledVector(up, halfH * 0.72)
-        .addScaledVector(right, halfW * 0.62);
-      moon.scale.setScalar(depth / 36);
-      moonLight.position.copy(moon.position).sub(target).normalize().multiplyScalar(14);
+      // Base de la cámara, para mover el sol y la luna en el encuadre
+      view.depth = distance + 14;
+      view.halfH = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * view.depth;
+      view.halfW = view.halfH * camera.aspect;
+      camera.getWorldDirection(view.forward);
+      view.right.crossVectors(view.forward, camera.up).normalize();
+      view.up.crossVectors(view.right, view.forward).normalize();
     }
 
-    scene.add(new THREE.HemisphereLight(0xdfe1e6, 0x2a2b2f, 1.15));
-    const moonLight = new THREE.DirectionalLight(0xf3f3f4, 1.7);
+    const view = {
+      depth: 1,
+      halfH: 1,
+      halfW: 1,
+      forward: new THREE.Vector3(),
+      right: new THREE.Vector3(),
+      up: new THREE.Vector3(),
+    };
+
+    /* Coloca un astro en el encuadre: u y v van de -1 a 1. */
+    function placeBody(body: THREE.Object3D, u: number, v: number) {
+      body.position
+        .copy(camera.position)
+        .addScaledVector(view.forward, view.depth)
+        .addScaledVector(view.up, view.halfH * v)
+        .addScaledVector(view.right, view.halfW * u);
+      body.scale.setScalar(view.depth / 36);
+    }
+
+    const hemi = new THREE.HemisphereLight(0xffffff, 0xa9b8c8, 1.3);
+    scene.add(hemi);
+    const moonLight = new THREE.DirectionalLight(0xfff4de, 2.2);
     moonLight.castShadow = true;
     moonLight.shadow.mapSize.set(1024, 1024);
     moonLight.shadow.camera.left = -8;
@@ -262,6 +301,8 @@ export default function WinterScene() {
     cabin.position.set(2.5, heightAt(2.5, 1.0), 1.0);
     cabin.rotation.y = -0.5;
     world.add(cabin);
+    const cabinWindow = (cabin.userData.windowPane as THREE.Mesh).material as THREE.MeshBasicMaterial;
+    const cabinLight = cabin.userData.light as THREE.PointLight;
 
     // Teleférico: dos cables casi paralelos de la estación baja a la cima
     const stationA = new THREE.Vector3(3.4, heightAt(3.4, 2.4) + 0.9, 2.4);
@@ -305,13 +346,89 @@ export default function WinterScene() {
     gondolaDown.scale.setScalar(1.5);
     world.add(gondolaUp, gondolaDown);
 
-    // Luna
-    const moon = new THREE.Mesh(
-      new THREE.SphereGeometry(1.15, 32, 16),
-      new THREE.MeshBasicMaterial({ color: C.moon }),
-    );
-    scene.add(moon);
+    // Sol y luna, cada uno con su halo
+    const flakeTexture = makeFlakeTexture();
+    function makeBody(color: number, radius: number, halo: number) {
+      const material = new THREE.MeshBasicMaterial({ color, transparent: true });
+      const body = new THREE.Mesh(new THREE.SphereGeometry(radius, 32, 16), material);
+      const glowMaterial = new THREE.SpriteMaterial({ map: flakeTexture, color, transparent: true, depthWrite: false });
+      const glow = new THREE.Sprite(glowMaterial);
+      glow.scale.setScalar(radius * halo);
+      body.add(glow);
+      scene.add(body);
+      return { body, material, glowMaterial };
+    }
+    const sun = makeBody(C.sun, 1.2, 6.5);
+    const moon = makeBody(C.moon, 1.05, 4.5);
+
+    // Estrellas: solo se ven de noche
+    const STARS = 260;
+    const starPos = new Float32Array(STARS * 3);
+    for (let i = 0; i < STARS; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const b = Math.acos(Math.random() * 2 - 1);
+      starPos[i * 3] = Math.sin(b) * Math.cos(a) * 46;
+      starPos[i * 3 + 1] = Math.cos(b) * 46;
+      starPos[i * 3 + 2] = Math.sin(b) * Math.sin(a) * 46;
+    }
+    const starGeometry = new THREE.BufferGeometry();
+    starGeometry.setAttribute("position", new THREE.BufferAttribute(starPos, 3));
+    const starMaterial = new THREE.PointsMaterial({
+      color: 0xffffff,
+      size: 1.7,
+      sizeAttenuation: false,
+      transparent: true,
+      depthWrite: false,
+    });
+    scene.add(new THREE.Points(starGeometry, starMaterial));
     placeCamera();
+
+    /* Ciclo de día y noche. phase va de 0 a 1: la primera mitad es el
+       recorrido del sol y la segunda el de la luna. Ambos salen por la
+       derecha, tras la loma, y se ocultan detrás de la cumbre. */
+    const top = new THREE.Color();
+    const bottom = new THREE.Color();
+    function applySky(phase: number) {
+      const day = phase < 0.5;
+      const s = day ? phase / 0.5 : (phase - 0.5) / 0.5;
+      const arc = Math.sin(Math.PI * s);
+      const elevation = day ? arc : -arc;
+      const dayK = smoothstep(-0.2, 0.6, elevation);
+      const duskK = 1 - smoothstep(0.1, 0.88, Math.abs(elevation));
+
+      const active = day ? sun : moon;
+      const idle = day ? moon : sun;
+      placeBody(active.body, 0.56 - 0.78 * s, -0.1 + 0.86 * arc);
+      const fade = smoothstep(0, 0.06, s) * smoothstep(0, 0.06, 1 - s);
+      active.body.visible = true;
+      active.material.opacity = fade;
+      active.glowMaterial.opacity = fade * (day ? 0.55 : 0.3);
+      idle.body.visible = false;
+
+      // Luz principal: viene del astro que esté en el cielo
+      moonLight.position.copy(active.body.position).sub(target).normalize();
+      moonLight.position.y = Math.max(moonLight.position.y, 0.22);
+      moonLight.position.multiplyScalar(14);
+      if (day) {
+        moonLight.color.copy(SKY.sunLow).lerp(SKY.sunHigh, smoothstep(0, 0.55, arc));
+        moonLight.intensity = 3.1 * smoothstep(0, 0.2, arc);
+      } else {
+        moonLight.color.copy(SKY.moonLight);
+        moonLight.intensity = 1.15 * smoothstep(0, 0.3, arc);
+      }
+      hemi.color.copy(SKY.hemiNight).lerp(SKY.hemiDay, dayK).lerp(SKY.sunLow, duskK * 0.35);
+      hemi.groundColor.copy(SKY.groundNight).lerp(SKY.groundDay, dayK);
+      hemi.intensity = 0.9 + dayK * 1.0;
+
+      // Cielo: degradado en el contenedor, detrás del lienzo transparente
+      top.copy(SKY.nightTop).lerp(SKY.dayTop, dayK).lerp(SKY.duskTop, duskK * 0.7);
+      bottom.copy(SKY.nightBottom).lerp(SKY.dayBottom, dayK).lerp(SKY.duskBottom, duskK * 0.9);
+      container!.style.background = `linear-gradient(#${top.getHexString(THREE.SRGBColorSpace)}, #${bottom.getHexString(THREE.SRGBColorSpace)})`;
+
+      starMaterial.opacity = (1 - dayK) * 0.9;
+      cabinWindow.color.copy(SKY.windowDay).lerp(SKY.windowNight, 1 - dayK);
+      cabinLight.intensity = 1.6 * (1 - dayK);
+    }
 
     // Nieve
     const FLAKES = 700;
@@ -325,7 +442,6 @@ export default function WinterScene() {
     }
     const flakeGeometry = new THREE.BufferGeometry();
     flakeGeometry.setAttribute("position", new THREE.BufferAttribute(flakePos, 3));
-    const flakeTexture = makeFlakeTexture();
     const flakes = new THREE.Points(
       flakeGeometry,
       new THREE.PointsMaterial({
@@ -360,6 +476,7 @@ export default function WinterScene() {
       const heading = Math.atan2(stationB.x - stationA.x, stationB.z - stationA.z);
       gondolaUp.rotation.y = heading;
       gondolaDown.rotation.y = heading;
+      applySky((START_PHASE + time / CYCLE_SECONDS) % 1);
     }
 
     function render() {
@@ -419,7 +536,10 @@ export default function WinterScene() {
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       placeCamera();
-      if (!frame) render();
+      if (!frame) {
+        place(elapsed);
+        render();
+      }
     });
     ro.observe(container);
 
@@ -428,6 +548,7 @@ export default function WinterScene() {
       io.disconnect();
       ro.disconnect();
       container.removeEventListener("pointermove", onPointer);
+      container.style.background = "";
       scene.traverse((object) => {
         const mesh = object as THREE.Mesh;
         if (mesh.geometry) mesh.geometry.dispose();
