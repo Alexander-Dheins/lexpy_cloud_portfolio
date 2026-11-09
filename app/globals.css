@@ -396,6 +396,20 @@ body {
       mask-image: none;
     }
   }
+  /* Borde blanco alrededor del texto del hero, para separarlo de los logos del fondo. */
+  .text-halo {
+    --halo: oklch(100% 0 0);
+    --hw: 0.045em;
+    text-shadow:
+      var(--hw) 0 0 var(--halo),
+      calc(var(--hw) * -1) 0 0 var(--halo),
+      0 var(--hw) 0 var(--halo),
+      0 calc(var(--hw) * -1) 0 var(--halo),
+      calc(var(--hw) * 0.7) calc(var(--hw) * 0.7) 0 var(--halo),
+      calc(var(--hw) * -0.7) calc(var(--hw) * 0.7) 0 var(--halo),
+      calc(var(--hw) * 0.7) calc(var(--hw) * -0.7) 0 var(--halo),
+      calc(var(--hw) * -0.7) calc(var(--hw) * -0.7) 0 var(--halo);
+  }
   .hero-backdrop {
     mask-image:
       linear-gradient(to right, transparent, #000 18%, #000 82%, transparent),

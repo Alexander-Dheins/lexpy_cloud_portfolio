@@ -12,11 +12,11 @@ export default function Hero({ lang }: { lang: Lang }) {
           <div className="mx-auto max-w-3xl text-center">
             <h1
               id="hero-titulo"
-              className="mx-auto max-w-[17ch] text-[clamp(2.5rem,5vw,4.25rem)] leading-[1.03] font-semibold tracking-[-0.035em]"
+              className="text-halo mx-auto max-w-[17ch] text-[clamp(2.5rem,5vw,4.25rem)] leading-[1.03] font-semibold tracking-[-0.035em]"
             >
               {t.title}
             </h1>
-            <p className="mx-auto mt-5 max-w-[44ch] text-[1.1875rem] leading-relaxed text-muted">
+            <p className="text-halo mx-auto mt-5 max-w-[44ch] text-[1.1875rem] leading-relaxed text-muted">
               {t.lead}
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-x-7 gap-y-4">
