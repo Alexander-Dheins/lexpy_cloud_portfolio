@@ -574,7 +574,6 @@ const es = {
   contact: {
     title: "Cuéntame qué quieres construir",
     lead: "Leo cada mensaje y respondo al correo que dejes.",
-    sceneCaption: "Escena en Three.js, renderizada en tu navegador.",
     name: "Nombre",
     email: "Correo",
     topic: "Tipo de proyecto",
@@ -1187,7 +1186,6 @@ const en: Dict = {
   contact: {
     title: "Tell me what you want to build",
     lead: "I read every message and reply to the email you leave.",
-    sceneCaption: "Three.js scene, rendered in your browser.",
     name: "Name",
     email: "Email",
     topic: "Project type",

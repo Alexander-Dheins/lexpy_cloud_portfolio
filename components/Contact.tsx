@@ -190,9 +190,6 @@ export default function Contact() {
       <div className="grid gap-6 lg:grid-cols-12 lg:gap-6">
         <div className="stage-matte relative h-[340px] overflow-hidden rounded-[22px] sm:h-[420px] lg:col-span-5 lg:h-auto">
           <WinterScene />
-          <p className="pointer-events-none absolute bottom-5 left-6 text-[13px] text-panel-muted">
-            {t.sceneCaption}
-          </p>
         </div>
 
         <div className="rounded-[22px] bg-paper-2 p-6 sm:p-9 lg:col-span-7">
