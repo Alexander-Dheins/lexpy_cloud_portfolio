@@ -18,7 +18,7 @@ export default async function HomePage({ lang }: { lang: Lang }) {
         <Services />
         <Contact />
       </main>
-      <Footer lang={lang} />
+      <Footer />
       <FloatingActions />
     </I18nProvider>
   );
