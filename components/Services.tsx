@@ -1,12 +1,15 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useRef, type CSSProperties } from "react";
 import { useI18n } from "@/components/i18n/I18nProvider";
 
+const TreeScene = dynamic(() => import("./services/TreeScene"), { ssr: false });
+
 /* Servicios como un árbol: las ramas son lo que entrego, el tronco es
    cómo lo construyo y la raíz es la infraestructura que lo sostiene.
-   El dibujo usa un lienzo de 1240 x 760; los textos se colocan en
-   porcentajes de ese mismo lienzo para que coincidan con las flechas. */
+   El árbol es una escena 3D; las flechas usan un lienzo de 1240 x 760 y
+   los textos se colocan en porcentajes de ese mismo lienzo. */
 
 const W = 1240;
 const H = 760;
@@ -69,119 +72,10 @@ const BASES = [
   },
 ];
 
-/* Copa: capas de círculos del fondo (oscuro) al frente (claro). */
-type Leaf = [number, number, number, string];
-
-const CANOPY_EDGE: Leaf[] = [
-  [440, 215, 30, "var(--tree-1)"],
-  [800, 220, 30, "var(--tree-1)"],
-  [505, 138, 36, "var(--tree-1)"],
-  [738, 134, 36, "var(--tree-1)"],
-  [585, 68, 34, "var(--tree-1)"],
-  [662, 64, 36, "var(--tree-1)"],
-  [470, 266, 34, "var(--tree-1)"],
-  [774, 268, 34, "var(--tree-1)"],
-  [565, 300, 38, "var(--tree-1)"],
-  [682, 302, 38, "var(--tree-1)"],
-];
-
-const CANOPY: Leaf[] = [
-  [520, 240, 70, "var(--tree-1)"],
-  [720, 240, 70, "var(--tree-1)"],
-  [620, 255, 82, "var(--tree-1)"],
-  [560, 168, 74, "var(--tree-1)"],
-  [690, 165, 74, "var(--tree-1)"],
-  [470, 192, 52, "var(--tree-1)"],
-  [770, 195, 52, "var(--tree-1)"],
-  [540, 212, 60, "var(--tree-2)"],
-  [702, 206, 60, "var(--tree-2)"],
-  [620, 178, 80, "var(--tree-2)"],
-  [500, 248, 46, "var(--tree-2)"],
-  [744, 250, 46, "var(--tree-2)"],
-  [620, 108, 62, "var(--tree-2)"],
-  [558, 120, 54, "var(--tree-2)"],
-  [688, 118, 54, "var(--tree-2)"],
-  [590, 138, 48, "var(--tree-3)"],
-  [660, 148, 44, "var(--tree-3)"],
-  [545, 176, 38, "var(--tree-3)"],
-  [706, 182, 38, "var(--tree-3)"],
-  [626, 92, 40, "var(--tree-3)"],
-  [600, 112, 26, "var(--tree-4)"],
-  [652, 124, 22, "var(--tree-4)"],
-  [562, 150, 20, "var(--tree-4)"],
-];
-
-/* Raíces: cada una lleva una pieza real del stack. */
-const ROOTS = [
-  { d: "M 600 500 C 570 520 520 545 440 590", tip: [432, 596], label: "Linux", anchor: "end" },
-  { d: "M 606 504 C 590 540 550 590 500 628", tip: [492, 638], label: "Docker", anchor: "end" },
-  { d: "M 615 506 C 610 560 590 615 572 655", tip: [566, 676], label: "Dokploy", anchor: "end" },
-  { d: "M 626 506 C 632 560 652 615 670 655", tip: [676, 676], label: "Cloudflare", anchor: "start" },
-  { d: "M 634 504 C 652 540 690 590 740 628", tip: [748, 638], label: "PostgreSQL", anchor: "start" },
-  { d: "M 640 500 C 670 520 720 545 800 590", tip: [808, 596], label: "Redis", anchor: "start" },
-] as const;
-
-
-const FINE_ROOTS = [
-  "M 603 503 C 580 530 552 560 528 600",
-  "M 611 505 C 604 545 596 580 600 620",
-  "M 631 505 C 640 545 648 580 642 620",
-  "M 637 503 C 660 530 688 560 712 600",
-];
+/* Cada raíz con etiqueta lleva una pieza real del stack (de izquierda a derecha). */
+const STACK = ["Linux", "Docker", "Dokploy", "Cloudflare", "PostgreSQL", "Redis"];
 
 const d = (ms: number) => ({ "--d": ms }) as CSSProperties;
-
-function TreeShape() {
-  return (
-    <g>
-      <line x1="360" x2="880" y1="502" y2="502" stroke="var(--rule)" strokeWidth="1.5" />
-
-      <g className="t-anim t-down" style={d(250)}>
-        {ROOTS.map((root) => (
-          <path key={root.label} d={root.d} fill="none" stroke="var(--tree-bark)" strokeWidth="6" strokeLinecap="round" />
-        ))}
-        {FINE_ROOTS.map((path) => (
-          <path key={path} d={path} fill="none" stroke="var(--tree-2)" strokeWidth="2" strokeLinecap="round" />
-        ))}
-        {ROOTS.map((root) => (
-          <text
-            key={root.label}
-            x={root.tip[0]}
-            y={root.tip[1]}
-            textAnchor={root.anchor}
-            fontSize="15"
-            fill="var(--muted)"
-            style={{ fontFamily: "var(--font-body)" }}
-          >
-            {root.label}
-          </text>
-        ))}
-      </g>
-
-      <g className="t-anim t-up" style={d(0)}>
-        <path
-          d="M 576 504 C 596 490 600 455 602 410 C 603 380 604 350 606 318 L 636 318 C 637 350 638 380 640 410 C 642 455 646 490 666 504 Z"
-          fill="var(--tree-bark)"
-        />
-        <path d="M 613 492 C 614 445 615 395 616 340" fill="none" stroke="var(--tree-2)" strokeWidth="1.6" strokeLinecap="round" />
-        <path d="M 629 484 C 628 440 628 392 627 346" fill="none" stroke="var(--tree-2)" strokeWidth="1.2" strokeLinecap="round" />
-      </g>
-
-      <g className="t-anim t-canopy" style={d(450)}>
-        {[...CANOPY_EDGE, ...CANOPY.slice(0, 7)].map(([cx, cy, r, fill], i) => (
-          <circle key={i} cx={cx} cy={cy} r={r} fill={fill} />
-        ))}
-        <path d="M 618 318 C 606 280 580 252 520 236" fill="none" stroke="var(--tree-bark)" strokeWidth="7" strokeLinecap="round" />
-        <path d="M 626 318 C 640 280 668 250 726 230" fill="none" stroke="var(--tree-bark)" strokeWidth="7" strokeLinecap="round" />
-        <path d="M 600 282 C 590 262 586 242 590 214" fill="none" stroke="var(--tree-bark)" strokeWidth="4" strokeLinecap="round" />
-        <path d="M 648 278 C 660 258 664 238 660 210" fill="none" stroke="var(--tree-bark)" strokeWidth="4" strokeLinecap="round" />
-        {CANOPY.slice(7).map(([cx, cy, r, fill], i) => (
-          <circle key={i} cx={cx} cy={cy} r={r} fill={fill} />
-        ))}
-      </g>
-    </g>
-  );
-}
 
 function Arrows() {
   return (
@@ -280,13 +174,17 @@ export default function Services() {
       </div>
 
       <div ref={ref} className="relative mt-14 xl:mt-16 xl:aspect-[1240/760]">
-        <svg viewBox={`0 0 ${W} ${H}`} aria-hidden className="absolute inset-0 hidden h-full w-full xl:block">
-          <Arrows />
-          <TreeShape />
-        </svg>
+        {/* El árbol 3D ocupa la franja central del lienzo (x de 360 a 880). */}
+        <div className="relative mx-auto aspect-[520/760] w-full max-w-[360px] xl:absolute xl:inset-y-0 xl:left-[29.03%] xl:aspect-auto xl:w-[41.94%] xl:max-w-none">
+          <TreeScene labels={STACK} />
+        </div>
 
-        <svg viewBox="360 20 520 680" aria-hidden className="mx-auto block w-full max-w-[340px] xl:hidden">
-          <TreeShape />
+        <svg
+          viewBox={`0 0 ${W} ${H}`}
+          aria-hidden
+          className="pointer-events-none absolute inset-0 hidden h-full w-full xl:block"
+        >
+          <Arrows />
         </svg>
 
         <div className="mx-auto mt-12 grid max-w-4xl gap-x-12 gap-y-9 sm:grid-cols-2 xl:mt-0 xl:block xl:max-w-none">
