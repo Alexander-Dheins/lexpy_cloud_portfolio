@@ -429,7 +429,7 @@ body {
       calc(var(--hw) * -0.7) calc(var(--hw) * -0.7) 0 var(--halo);
   }
   .black-hole {
-    mask-image: linear-gradient(to bottom, transparent, #000 38%);
+    mask-image: linear-gradient(to bottom, transparent, #000 18%);
   }
   .hero-backdrop {
     mask-image:
