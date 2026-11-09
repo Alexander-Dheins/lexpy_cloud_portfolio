@@ -399,7 +399,7 @@ body {
   /* Borde blanco alrededor del texto del hero, para separarlo de los logos del fondo. */
   .text-halo {
     --halo: oklch(100% 0 0);
-    --hw: 0.045em;
+    --hw: 0.032em;
     text-shadow:
       var(--hw) 0 0 var(--halo),
       calc(var(--hw) * -1) 0 0 var(--halo),
