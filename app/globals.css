@@ -20,6 +20,8 @@
   --panel-rule: oklch(33% 0.005 265);
   --panel-ink: oklch(94% 0.003 265);
   --panel-muted: oklch(70% 0.004 265);
+  --hole: oklch(8% 0.004 265);
+  --hole-light: oklch(97% 0.004 265);
   --panel-glass: oklch(98% 0.002 265 / 0.045);
   --panel-glass-strong: oklch(98% 0.002 265 / 0.075);
   --panel-glass-border: oklch(98% 0.002 265 / 0.09);
@@ -377,7 +379,31 @@ body {
   animation: a-scan 1.8s var(--ease-in-out) infinite alternate;
 }
 
-/* Footer logo marquee: each track holds its list twice, so -50% loops seamlessly. */
+/* Footer black hole: the disk's highlight drifts along its ellipse. */
+@keyframes a-orbit {
+  to {
+    stroke-dashoffset: -1200;
+  }
+}
+
+@keyframes a-breathe {
+  from {
+    opacity: 0.75;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.a-orbit {
+  animation: a-orbit 40s linear infinite;
+}
+
+.a-breathe {
+  animation: a-breathe 6s var(--ease-in-out) infinite alternate;
+}
+
+/* Logo marquee (hero backdrop): each track holds its list twice, so -50% loops seamlessly. */
 @keyframes a-marquee {
   from {
     transform: translateX(0);
@@ -388,14 +414,6 @@ body {
 }
 
 @layer components {
-  .marquee-row {
-    mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .marquee-row {
-      mask-image: none;
-    }
-  }
   /* Borde blanco alrededor del texto del hero, para separarlo de los logos del fondo. */
   .text-halo {
     --halo: oklch(100% 0 0);
@@ -410,6 +428,9 @@ body {
       calc(var(--hw) * 0.7) calc(var(--hw) * -0.7) 0 var(--halo),
       calc(var(--hw) * -0.7) calc(var(--hw) * -0.7) 0 var(--halo);
   }
+  .black-hole {
+    mask-image: linear-gradient(to bottom, transparent, #000 38%);
+  }
   .hero-backdrop {
     mask-image:
       linear-gradient(to right, transparent, #000 18%, #000 82%, transparent),
@@ -419,11 +440,6 @@ body {
   .marquee-track {
     animation: a-marquee var(--speed, 40s) linear infinite;
     animation-direction: var(--dir, normal);
-  }
-  .marquee:hover .marquee-track,
-  .marquee:focus-within .marquee-track,
-  .marquee[data-paused="true"] .marquee-track {
-    animation-play-state: paused;
   }
 }
 

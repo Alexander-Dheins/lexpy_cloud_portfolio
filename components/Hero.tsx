@@ -9,10 +9,10 @@ export default function Hero({ lang }: { lang: Lang }) {
       <div className="relative isolate">
         <HeroBackdrop />
         <div className="container-page relative pt-10 pb-12 lg:pt-14 lg:pb-14">
-          <div className="mx-auto max-w-3xl text-center">
+          <div className="mx-auto text-center">
             <h1
               id="hero-titulo"
-              className="text-halo mx-auto max-w-[17ch] text-[clamp(2.5rem,5vw,4.25rem)] leading-[1.03] font-semibold tracking-[-0.035em]"
+              className="text-halo mx-auto max-w-[17ch] text-[clamp(2.5rem,5.2vw,4.25rem)] leading-[1.03] font-semibold tracking-[-0.035em] md:max-w-none md:whitespace-nowrap"
             >
               {t.title}
             </h1>

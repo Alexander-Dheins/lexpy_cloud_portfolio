@@ -613,9 +613,6 @@ const es = {
     tagline:
       "Desarrollo de software e infraestructura propia, de la idea al servidor.",
     cta: "Escríbeme",
-    techLabel: "Tecnologías con las que trabajo",
-    pauseLogos: "Pausar logos",
-    playLogos: "Reanudar logos",
     deployed: "Desplegado en un VPS propio con Dokploy.",
     backToTop: "Volver arriba",
   },
@@ -1232,9 +1229,6 @@ const en: Dict = {
     tagline:
       "Software development and self-hosted infrastructure, from idea to server.",
     cta: "Write to me",
-    techLabel: "Technologies I work with",
-    pauseLogos: "Pause logos",
-    playLogos: "Resume logos",
     deployed: "Deployed on my own VPS with Dokploy.",
     backToTop: "Back to top",
   },
