@@ -28,7 +28,7 @@ export default function Footer({ lang }: { lang: Lang }) {
           </a>
         </div>
 
-        <div className="mt-8 flex flex-col gap-2 border-t border-panel-rule pt-5 text-[13.5px] text-panel-muted sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-8 flex flex-col gap-2 pt-1 text-[13.5px] text-panel-muted sm:flex-row sm:items-center sm:justify-between">
           <span>© {YEAR} lexpy.cloud</span>
           <a href="#top" className="transition-colors hover:text-panel-ink">
             {t.backToTop}

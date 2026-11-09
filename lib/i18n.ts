@@ -9,7 +9,7 @@ export const HOME_PATH: Record<Lang, string> = { es: "/", en: "/en" };
 
 const es = {
   meta: {
-    title: "lexpy, desarrollo de software e infraestructura",
+    title: "Alexander Developer",
     description:
       "Desarrollo paneles, APIs, plataformas de cursos e infraestructura propia, de la idea al servidor.",
   },
@@ -663,7 +663,7 @@ export type Dict = typeof es;
 
 const en: Dict = {
   meta: {
-    title: "lexpy, software development and infrastructure",
+    title: "Alexander Developer",
     description:
       "I build dashboards, APIs, course platforms and self-hosted infrastructure, from idea to server.",
   },

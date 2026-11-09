@@ -16,7 +16,15 @@ const RINGS = [
   { dr: 2, w: 2.4, o: 1, blur: false },
 ];
 
-/* Bandas del disco por delante: semieje mayor, menor, grosor y opacidad. */
+/* El disco está inclinado: su centro queda por encima del borde, así se ve
+   la mitad trasera (que pasa detrás del agujero) y la delantera (que lo cruza). */
+const DY = CY - 44;
+
+/* Mitad trasera (arriba) o delantera (abajo) de una elipse. */
+const half = (rx: number, ry: number, front: boolean) =>
+  `M ${CX - rx} ${DY} A ${rx} ${ry} 0 0 ${front ? 0 : 1} ${CX + rx} ${DY}`;
+
+/* Bandas del disco: semieje mayor, menor, grosor y opacidad. */
 const BANDS = [
   { rx: 560, ry: 64, w: 1, o: 0.35 },
   { rx: 470, ry: 54, w: 1.4, o: 0.6 },
@@ -56,6 +64,12 @@ export default function BlackHole() {
           <filter id="bh-blur-lg" x="-30%" y="-30%" width="160%" height="160%">
             <feGaussianBlur stdDeviation="12" />
           </filter>
+          {/* Los destellos se ocultan donde pasan por detrás del agujero. */}
+          <mask id="bh-front" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="270">
+            <rect width="1200" height="270" fill="white" />
+            <circle cx={CX} cy={CY} r={R} fill="black" />
+            <rect x={CX - R} y={DY} width={R * 2} height={270 - DY} fill="white" />
+          </mask>
         </defs>
 
         {/* Resplandor general */}
@@ -75,45 +89,44 @@ export default function BlackHole() {
           />
         ))}
 
+        {/* Disco: mitad trasera, queda tapada por el agujero */}
+        <path d={half(430, 50, false)} stroke="url(#bh-disk)" strokeWidth="16" opacity="0.3" filter="url(#bh-blur-lg)" />
+        {BANDS.map((band) => (
+          <path key={band.rx} d={half(band.rx, band.ry, false)} stroke="url(#bh-disk)" strokeWidth={band.w} opacity={band.o * 0.7} />
+        ))}
+
         {/* Horizonte de sucesos */}
         <circle cx={CX} cy={CY} r={R} fill="var(--hole)" />
 
-        {/* Disco de acreción por delante, en bandas */}
-        <ellipse cx={CX} cy={CY} rx="430" ry="50" stroke="url(#bh-disk)" strokeWidth="18" opacity="0.4" filter="url(#bh-blur-lg)" />
+        {/* Disco: mitad delantera, cruza por delante del agujero */}
+        <path d={half(430, 50, true)} stroke="url(#bh-disk)" strokeWidth="18" opacity="0.4" filter="url(#bh-blur-lg)" />
         {BANDS.map((band) => (
-          <ellipse
-            key={band.rx}
-            cx={CX}
-            cy={CY}
-            rx={band.rx}
-            ry={band.ry}
-            stroke="url(#bh-disk)"
-            strokeWidth={band.w}
-            opacity={band.o}
-          />
+          <path key={band.rx} d={half(band.rx, band.ry, true)} stroke="url(#bh-disk)" strokeWidth={band.w} opacity={band.o} />
         ))}
         <ellipse
           className="a-orbit"
           cx={CX}
-          cy={CY}
+          cy={DY}
           rx="430"
           ry="50"
           stroke="url(#bh-disk)"
           strokeWidth="1.4"
           strokeDasharray="50 160 18 200"
           opacity="0.6"
+          mask="url(#bh-front)"
         />
         <ellipse
           className="a-orbit"
           style={{ animationDuration: "64s" }}
           cx={CX}
-          cy={CY}
+          cy={DY}
           rx="520"
           ry="60"
           stroke="url(#bh-disk)"
           strokeWidth="1"
           strokeDasharray="26 220 80 260"
           opacity="0.4"
+          mask="url(#bh-front)"
         />
       </svg>
     </div>
