@@ -613,7 +613,6 @@ const es = {
     tagline:
       "Desarrollo de software e infraestructura propia, de la idea al servidor.",
     cta: "Escríbeme",
-    deployed: "Desplegado en un VPS propio con Dokploy.",
     backToTop: "Volver arriba",
   },
   chat: {
@@ -1229,7 +1228,6 @@ const en: Dict = {
     tagline:
       "Software development and self-hosted infrastructure, from idea to server.",
     cta: "Write to me",
-    deployed: "Deployed on my own VPS with Dokploy.",
     backToTop: "Back to top",
   },
   chat: {

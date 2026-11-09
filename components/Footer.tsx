@@ -10,14 +10,15 @@ export default function Footer({ lang }: { lang: Lang }) {
 
   return (
     <footer className="relative overflow-hidden bg-panel text-panel-ink">
-      <div className="container-page relative z-10 pt-14 pb-2">
+      <BlackHole />
+      <div className="container-page relative z-10 pt-14 pb-10">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
             <a href="#top" className="flex items-center gap-3 text-[21px] font-semibold tracking-[-0.02em]">
               <Image src={logo} alt="" width={44} height={44} className="h-11 w-11" />
               lexpy
             </a>
-            <p className="max-w-[40ch] text-[15px] leading-relaxed text-panel-muted">{t.tagline}</p>
+            <p className="max-w-[32ch] text-[15px] leading-relaxed text-panel-muted">{t.tagline}</p>
           </div>
           <a
             href="#contacto"
@@ -29,14 +30,12 @@ export default function Footer({ lang }: { lang: Lang }) {
 
         <div className="mt-8 flex flex-col gap-2 border-t border-panel-rule pt-5 text-[13.5px] text-panel-muted sm:flex-row sm:items-center sm:justify-between">
           <span>© {YEAR} lexpy.cloud</span>
-          <span>{t.deployed}</span>
           <a href="#top" className="transition-colors hover:text-panel-ink">
             {t.backToTop}
           </a>
         </div>
       </div>
 
-      <BlackHole />
     </footer>
   );
 }

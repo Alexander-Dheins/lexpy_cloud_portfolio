@@ -29,7 +29,7 @@ export default function BlackHole() {
   return (
     <div
       aria-hidden="true"
-      className="black-hole pointer-events-none relative h-[140px] w-full select-none sm:h-[190px] lg:h-[230px]"
+      className="black-hole pointer-events-none absolute inset-x-0 bottom-0 h-[150px] select-none sm:h-[190px] lg:h-[230px]"
     >
       <svg viewBox="0 0 1200 270" preserveAspectRatio="xMidYMax slice" className="absolute inset-0 h-full w-full" fill="none">
         <defs>
