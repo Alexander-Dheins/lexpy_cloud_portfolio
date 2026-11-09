@@ -195,13 +195,10 @@ export default function Contact() {
         <div className="rounded-[22px] bg-paper-2 p-6 sm:p-9 lg:col-span-7">
           <h2
             id="contacto-titulo"
-            className="text-[clamp(1.75rem,2.8vw,2.5rem)] leading-[1.08] font-semibold tracking-[-0.03em]"
+            className="mb-7 text-[clamp(1.75rem,2.8vw,2.5rem)] leading-[1.08] font-semibold tracking-[-0.03em]"
           >
             {t.title}
           </h2>
-          <p className="mt-3 mb-8 max-w-[46ch] text-[16px] leading-relaxed text-muted">
-            {t.lead}
-          </p>
           {sentTo !== null ? (
             <div role="status" className="flex min-h-[360px] flex-col items-start justify-center">
               <p className="text-[clamp(1.5rem,2.4vw,2rem)] leading-tight font-semibold tracking-[-0.02em]">

@@ -11,7 +11,7 @@ const es = {
   meta: {
     title: "Alexander Developer",
     description:
-      "Desarrollo paneles, APIs, plataformas de cursos e infraestructura propia, de la idea al servidor.",
+      "Páginas web, dashboards, sistemas a medida y automatización para pequeñas y medianas empresas.",
   },
   nav: {
     home: "lexpy, ir al inicio",
@@ -23,7 +23,7 @@ const es = {
   },
   hero: {
     title: "Del desarrollo a producción.",
-    lead: "Paneles, APIs, plataformas de cursos e infraestructura, de la idea al servidor.",
+    lead: "Páginas web, dashboards, sistemas a medida y automatización para pequeñas y medianas empresas.",
     primary: "Hablemos de tu proyecto",
     secondary: "Ver servicios",
   },
@@ -573,7 +573,6 @@ const es = {
   },
   contact: {
     title: "Cuéntame qué quieres construir",
-    lead: "Leo cada mensaje y respondo al correo que dejes.",
     name: "Nombre",
     email: "Correo",
     topic: "Tipo de proyecto",
@@ -662,7 +661,7 @@ const en: Dict = {
   meta: {
     title: "Alexander Developer",
     description:
-      "I build dashboards, APIs, course platforms and self-hosted infrastructure, from idea to server.",
+      "Websites, dashboards, custom systems and automation for small and mid-sized businesses.",
   },
   nav: {
     home: "lexpy, go to home",
@@ -674,7 +673,7 @@ const en: Dict = {
   },
   hero: {
     title: "From development to production.",
-    lead: "Dashboards, APIs, course platforms and infrastructure, from idea to server.",
+    lead: "Websites, dashboards, custom systems and automation for small and mid-sized businesses.",
     primary: "Let's talk about your project",
     secondary: "See services",
   },
@@ -1185,7 +1184,6 @@ const en: Dict = {
   },
   contact: {
     title: "Tell me what you want to build",
-    lead: "I read every message and reply to the email you leave.",
     name: "Name",
     email: "Email",
     topic: "Project type",
