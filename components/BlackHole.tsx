@@ -5,7 +5,7 @@
 
 const CX = 600;
 const CY = 270;
-const R = 140;
+const R = 196;
 
 /* Anillos alrededor del horizonte: radio extra, grosor, opacidad y desenfoque. */
 const RINGS = [
@@ -37,9 +37,9 @@ export default function BlackHole() {
   return (
     <div
       aria-hidden="true"
-      className="black-hole pointer-events-none absolute inset-x-0 bottom-0 h-[190px] select-none sm:h-[200px] lg:h-[230px]"
+      className="black-hole pointer-events-none absolute inset-0 select-none"
     >
-      <svg viewBox="0 0 1200 270" preserveAspectRatio="xMidYMax slice" className="absolute inset-0 h-full w-full" fill="none">
+      <svg viewBox="0 0 1200 270" style={{ aspectRatio: "1200 / 270" }} preserveAspectRatio="xMidYMax meet" className="absolute bottom-0 left-1/2 h-full w-auto max-w-none -translate-x-1/2" fill="none">
         <defs>
           <radialGradient id="bh-glow" cx={CX} cy={CY} r="270" gradientUnits="userSpaceOnUse">
             <stop offset="0.5" stopColor="var(--hole-light)" stopOpacity="0.18" />
