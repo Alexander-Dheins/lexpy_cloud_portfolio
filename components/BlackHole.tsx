@@ -5,7 +5,7 @@
 
 const CX = 600;
 const CY = 270;
-const R = 196;
+const R = 218;
 
 /* Anillos alrededor del horizonte: radio extra, grosor, opacidad y desenfoque. */
 const RINGS = [
