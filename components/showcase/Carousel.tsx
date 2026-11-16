@@ -8,6 +8,7 @@ import {
   type ComponentType,
   type CSSProperties,
   type KeyboardEvent,
+  type ReactNode,
 } from "react";
 import { useI18n } from "@/components/i18n/I18nProvider";
 
@@ -52,9 +53,18 @@ type Props = {
   /* Prefijo único para los id de pestañas y paneles. */
   idPrefix: string;
   label: string;
+  /* Botones extra que en móvil van a los lados del botón de pausa. */
+  mobileStart?: ReactNode;
+  mobileEnd?: ReactNode;
 };
 
-export default function Carousel({ slides, idPrefix, label }: Props) {
+export default function Carousel({
+  slides,
+  idPrefix,
+  label,
+  mobileStart,
+  mobileEnd,
+}: Props) {
   const s = useI18n().t.showcase;
   const [active, setActive] = useState(0);
   const [plays, setPlays] = useState<number[]>(() => slides.map(() => 0));
@@ -124,7 +134,9 @@ export default function Carousel({ slides, idPrefix, label }: Props) {
         ref={stageRef}
         aria-roledescription={s.carousel}
         aria-label={label}
-        onPointerEnter={(event) => event.pointerType === "mouse" && setHovered(true)}
+        onPointerEnter={(event) =>
+          event.pointerType === "mouse" && setHovered(true)
+        }
         onPointerLeave={() => setHovered(false)}
         style={{ aspectRatio: `${CANVAS_W} / ${CANVAS_H}` }}
         className="stage-matte relative w-full overflow-hidden rounded-[22px] text-panel-ink"
@@ -240,37 +252,47 @@ export default function Carousel({ slides, idPrefix, label }: Props) {
           <Arrow dir="right" />
         </button>
 
-        <button
-          type="button"
-          onClick={() => setUserPaused(!paused)}
-          aria-label={paused ? s.play : s.pause}
-          className={roundButton}
-        >
-          <svg viewBox="0 0 16 16" aria-hidden className="h-3.5 w-3.5">
-            {paused ? (
-              <path d="M4.5 2.8v10.4L13 8z" fill="currentColor" />
-            ) : (
-              <>
-                <rect
-                  x="3.5"
-                  y="2.5"
-                  width="3"
-                  height="11"
-                  rx="1"
-                  fill="currentColor"
-                />
-                <rect
-                  x="9.5"
-                  y="2.5"
-                  width="3"
-                  height="11"
-                  rx="1"
-                  fill="currentColor"
-                />
-              </>
-            )}
-          </svg>
-        </button>
+        <div className="flex items-center gap-3">
+          {mobileStart ? (
+            <div className="flex items-center gap-3 sm:hidden">
+              {mobileStart}
+            </div>
+          ) : null}
+          <button
+            type="button"
+            onClick={() => setUserPaused(!paused)}
+            aria-label={paused ? s.play : s.pause}
+            className={roundButton}
+          >
+            <svg viewBox="0 0 16 16" aria-hidden className="h-3.5 w-3.5">
+              {paused ? (
+                <path d="M4.5 2.8v10.4L13 8z" fill="currentColor" />
+              ) : (
+                <>
+                  <rect
+                    x="3.5"
+                    y="2.5"
+                    width="3"
+                    height="11"
+                    rx="1"
+                    fill="currentColor"
+                  />
+                  <rect
+                    x="9.5"
+                    y="2.5"
+                    width="3"
+                    height="11"
+                    rx="1"
+                    fill="currentColor"
+                  />
+                </>
+              )}
+            </svg>
+          </button>
+          {mobileEnd ? (
+            <div className="flex items-center gap-3 sm:hidden">{mobileEnd}</div>
+          ) : null}
+        </div>
       </div>
     </div>
   );

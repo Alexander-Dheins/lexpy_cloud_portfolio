@@ -17,11 +17,69 @@ import {
   PlanningComplianceScene,
   PlanningScene,
 } from "./ProjectScenes";
+import { siGithub } from "simple-icons";
 import { useI18n } from "@/components/i18n/I18nProvider";
 
 export type ProjectId = "mineops" | "planning" | "flota" | "activos";
 
 const ORDER: ProjectId[] = ["mineops", "planning", "flota", "activos"];
+
+/* Enlaces de cada proyecto, por ahora solo MINEOPS. */
+const LINKS: Partial<Record<ProjectId, { repo?: string; demo?: string }>> = {
+  mineops: {
+    repo: "https://github.com/Alexander-Dheins/mineops_dimarza",
+    demo: "https://mineops.lexpy.cloud",
+  },
+};
+
+const circleButton =
+  "grid h-10 w-10 shrink-0 place-items-center rounded-full border border-rule text-ink transition-colors duration-[var(--dur-short)] hover:bg-paper-2";
+
+function useProjectLinks(id: ProjectId) {
+  const t = useI18n().t.projects;
+  const links = LINKS[id];
+  if (!links) return { repo: null, demo: null };
+  const repo = links.repo ? (
+    <a
+      href={links.repo}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={t.repo}
+      title={t.repo}
+      className={circleButton}
+    >
+      <svg
+        viewBox="0 0 24 24"
+        aria-hidden
+        className="h-[18px] w-[18px]"
+        fill="currentColor"
+      >
+        <path d={siGithub.path} />
+      </svg>
+    </a>
+  ) : null;
+  const demo = links.demo ? (
+    <a
+      href={links.demo}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={t.demo}
+      title={t.demo}
+      className={circleButton}
+    >
+      <svg viewBox="0 0 16 16" aria-hidden className="h-4 w-4" fill="none">
+        <path
+          d="M5 11l6-6M6 4.5h5.5V10"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </a>
+  ) : null;
+  return { repo, demo };
+}
 
 /* Cada proyecto tiene su propio carrusel; las etiquetas salen del diccionario. */
 const PROJECT_SCENES: Record<ProjectId, ComponentType[]> = {
@@ -152,6 +210,7 @@ function Viewer({ id, onClose }: { id: ProjectId; onClose: () => void }) {
     };
   }, []);
 
+  const { repo, demo } = useProjectLinks(id);
   const slides = PROJECT_SCENES[id].map((Component, i) => ({
     id: `${id}-${i}`,
     label: item.slides[i],
@@ -183,23 +242,38 @@ function Viewer({ id, onClose }: { id: ProjectId; onClose: () => void }) {
           </h2>
           <p className="mt-1 text-[15px] text-muted">{item.desc}</p>
         </div>
-        <button
-          type="button"
-          onClick={() => ref.current?.close()}
-          aria-label={t.close}
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-rule transition-colors duration-[var(--dur-short)] hover:bg-paper-2"
-        >
-          <svg viewBox="0 0 16 16" aria-hidden className="h-4 w-4" fill="none">
-            <path
-              d="M4 4l8 8M12 4l-8 8"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-            />
-          </svg>
-        </button>
+        <div className="flex shrink-0 items-center gap-2.5">
+          {repo ? <span className="hidden sm:contents">{repo}</span> : null}
+          {demo ? <span className="hidden sm:contents">{demo}</span> : null}
+          <button
+            type="button"
+            onClick={() => ref.current?.close()}
+            aria-label={t.close}
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-rule transition-colors duration-[var(--dur-short)] hover:bg-paper-2"
+          >
+            <svg
+              viewBox="0 0 16 16"
+              aria-hidden
+              className="h-4 w-4"
+              fill="none"
+            >
+              <path
+                d="M4 4l8 8M12 4l-8 8"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
-      <Carousel slides={slides} idPrefix={`proyecto-${id}`} label={item.name} />
+      <Carousel
+        slides={slides}
+        idPrefix={`proyecto-${id}`}
+        label={item.name}
+        mobileStart={repo}
+        mobileEnd={demo}
+      />
     </dialog>
   );
 }

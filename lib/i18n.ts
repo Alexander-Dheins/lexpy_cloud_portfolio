@@ -388,6 +388,8 @@ const es = {
     lead: "Elige uno para ver su recorrido.",
     view: "Ver su carrusel",
     close: "Cerrar",
+    repo: "Ver el repositorio en GitHub",
+    demo: "Abrir la demo",
     slideCount: "3 vistas",
     items: {
       mineops: {
@@ -999,6 +1001,8 @@ const en: Dict = {
     lead: "Pick one to walk through it.",
     view: "Open its carousel",
     close: "Close",
+    repo: "View the repository on GitHub",
+    demo: "Open the demo",
     slideCount: "3 views",
     items: {
       mineops: {
