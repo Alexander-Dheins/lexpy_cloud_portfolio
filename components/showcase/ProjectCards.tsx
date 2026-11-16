@@ -28,7 +28,7 @@ const ORDER: ProjectId[] = ["mineops", "planning", "flota", "activos"];
 const LINKS: Partial<Record<ProjectId, { repo?: string; demo?: string }>> = {
   mineops: {
     repo: "https://github.com/Alexander-Dheins/mineops_dimarza",
-    demo: "https://mineops.lexpy.cloud",
+    demo: "https://mineops-demo-navy.vercel.app",
   },
 };
 
