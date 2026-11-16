@@ -388,7 +388,7 @@ export default function ProjectCards() {
                 onClick={() => setOpen(id)}
                 aria-haspopup="dialog"
                 aria-label={`${item.name}: ${t.view}`}
-                className="group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-rule bg-paper-2 text-left transition-colors duration-[var(--dur-short)] hover:border-muted"
+                className="group flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-rule bg-paper-2 text-left transition-colors duration-[var(--dur-short)] hover:border-muted"
               >
                 <div className="stage-matte relative aspect-[16/9] w-full text-panel-ink">
                   <Thumb id={id} />
