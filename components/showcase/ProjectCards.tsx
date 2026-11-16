@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, type ComponentType } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ComponentType,
+  type CSSProperties,
+} from "react";
 import Carousel from "./Carousel";
 import MineopsScene, {
   MineopsStaffScene,
@@ -27,7 +33,7 @@ const ORDER: ProjectId[] = ["mineops", "planning", "flota", "activos"];
 /* Enlaces de cada proyecto, por ahora solo MINEOPS. */
 const LINKS: Partial<Record<ProjectId, { repo?: string; demo?: string }>> = {
   mineops: {
-    repo: "https://github.com/Alexander-Dheins/mineops_dimarza",
+    repo: "https://github.com/Alexander-Dheins/mineops_demo",
     demo: "https://mineops-demo-navy.vercel.app",
   },
 };
@@ -81,6 +87,63 @@ function useProjectLinks(id: ProjectId) {
   return { repo, demo };
 }
 
+/* Enlaces sobre la miniatura de la tarjeta, si el proyecto los tiene. */
+function CardLinks({ id }: { id: ProjectId }) {
+  const t = useI18n().t.projects;
+  const links = LINKS[id];
+  if (!links) return null;
+  const chip =
+    "grid h-8 w-8 place-items-center rounded-full bg-panel-ink text-panel transition-opacity duration-[var(--dur-short)] hover:opacity-80";
+  return (
+    <div className="absolute top-2.5 right-2.5 z-10 flex gap-2">
+      {links.repo ? (
+        <a
+          href={links.repo}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={t.repo}
+          title={t.repo}
+          className={chip}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden
+            className="h-4 w-4"
+            fill="currentColor"
+          >
+            <path d={siGithub.path} />
+          </svg>
+        </a>
+      ) : null}
+      {links.demo ? (
+        <a
+          href={links.demo}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={t.demo}
+          title={t.demo}
+          className={chip}
+        >
+          <svg
+            viewBox="0 0 16 16"
+            aria-hidden
+            className="h-3.5 w-3.5"
+            fill="none"
+          >
+            <path
+              d="M5 11l6-6M6 4.5h5.5V10"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </a>
+      ) : null}
+    </div>
+  );
+}
+
 /* Cada proyecto tiene su propio carrusel; las etiquetas salen del diccionario. */
 const PROJECT_SCENES: Record<ProjectId, ComponentType[]> = {
   mineops: [MineopsScene, MineopsStaffScene, MineopsUnitsScene],
@@ -106,7 +169,11 @@ function Thumb({ id }: { id: ProjectId }) {
         </div>
         <div className="flex flex-1 flex-col gap-1.5">
           {[0, 1, 2, 3, 4].map((r) => (
-            <div key={r} className="flex items-center gap-1.5">
+            <div
+              key={r}
+              style={{ "--d": r * 320 } as CSSProperties}
+              className="thumb-pulse flex items-center gap-1.5"
+            >
               <span className="h-2.5 w-2.5 rounded-full border border-panel-muted" />
               <span className={`h-1 flex-1 ${bar}`} />
               <span className="h-1 w-1/5 rounded-full bg-panel-4" />
@@ -122,8 +189,17 @@ function Thumb({ id }: { id: ProjectId }) {
         {Array.from({ length: 8 }, (_, i) => (
           <span
             key={i}
-            className={`rounded-md ${i === 2 ? "bg-panel-ink/80" : "bg-panel-2"}`}
-          />
+            className="relative overflow-hidden rounded-md bg-panel-2"
+          >
+            {[2, 5, 7, 0].includes(i) ? (
+              <span
+                style={
+                  { "--d": [2, 5, 7, 0].indexOf(i) * 1100 } as CSSProperties
+                }
+                className="thumb-blink absolute inset-0 bg-panel-ink/80"
+              />
+            ) : null}
+          </span>
         ))}
       </div>
     );
@@ -143,8 +219,14 @@ function Thumb({ id }: { id: ProjectId }) {
             className="relative block h-2.5 rounded-full bg-panel-2"
           >
             <span
-              style={{ left: `${left}%`, width: `${width}%` }}
-              className={`absolute inset-y-0 rounded-full ${i < 2 ? "bg-panel-ink/85" : "bg-panel-4"}`}
+              style={
+                {
+                  left: `${left}%`,
+                  width: `${width}%`,
+                  "--d": i * 380,
+                } as CSSProperties
+              }
+              className={`thumb-slide absolute inset-y-0 rounded-full ${i < 2 ? "bg-panel-ink/85" : "bg-panel-4"}`}
             />
           </span>
         ))}
@@ -165,6 +247,7 @@ function Thumb({ id }: { id: ProjectId }) {
           stroke="currentColor"
           strokeWidth="1"
           strokeDasharray="2.5 2"
+          className="thumb-flow"
         />
         {[
           [14, 42],
@@ -185,7 +268,7 @@ function Thumb({ id }: { id: ProjectId }) {
           cx="88"
           cy="12"
           r="3.2"
-          className="text-panel-ink"
+          className="thumb-pulse text-panel-ink"
           fill="currentColor"
         />
       </svg>
@@ -295,7 +378,11 @@ export default function ProjectCards() {
         {ORDER.map((id) => {
           const item = t.items[id];
           return (
-            <li key={id} className="w-[68%] shrink-0 snap-start sm:w-auto">
+            <li
+              key={id}
+              className="relative w-[68%] shrink-0 snap-start sm:w-auto"
+            >
+              <CardLinks id={id} />
               <button
                 type="button"
                 onClick={() => setOpen(id)}

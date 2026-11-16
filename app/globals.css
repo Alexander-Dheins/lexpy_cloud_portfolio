@@ -333,6 +333,61 @@ body {
   animation: a-scan 1.8s var(--ease-in-out) infinite alternate;
 }
 
+/* Miniaturas de "Más proyectos": animaciones pequeñas y continuas. */
+@keyframes a-thumb-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes a-thumb-blink {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  35%,
+  60% {
+    opacity: 1;
+  }
+}
+@keyframes a-thumb-slide {
+  from {
+    transform: translateX(-14%);
+  }
+  to {
+    transform: translateX(14%);
+  }
+}
+@keyframes a-thumb-flow {
+  to {
+    stroke-dashoffset: -18;
+  }
+}
+.thumb-pulse {
+  animation: a-thumb-pulse 2.4s var(--ease-in-out) infinite;
+  animation-delay: calc(var(--d, 0) * 1ms);
+}
+.thumb-blink {
+  opacity: 0;
+  animation: a-thumb-blink 4.4s var(--ease-in-out) infinite;
+  animation-delay: calc(var(--d, 0) * 1ms);
+}
+.thumb-slide {
+  animation: a-thumb-slide 3.2s var(--ease-in-out) infinite alternate;
+  animation-delay: calc(var(--d, 0) * 1ms);
+}
+.thumb-flow {
+  animation: a-thumb-flow 1.6s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .thumb-blink {
+    opacity: 1;
+  }
+}
+
 /* Footer black hole: the disk's highlight drifts along its ellipse. */
 @keyframes a-orbit {
   to {
