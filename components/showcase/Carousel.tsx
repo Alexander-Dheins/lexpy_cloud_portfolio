@@ -167,7 +167,7 @@ export default function Carousel({ slides, idPrefix, label }: Props) {
         {slides[active].label}
       </p>
 
-      <div className="mt-2 flex flex-wrap items-center justify-center gap-x-5 gap-y-4 sm:mt-6">
+      <div className="mt-2 flex flex-wrap items-center justify-center gap-x-5 gap-y-4 sm:mt-6 sm:flex-nowrap">
         <button
           type="button"
           onClick={() => show(active - 1)}
@@ -184,7 +184,7 @@ export default function Carousel({ slides, idPrefix, label }: Props) {
           style={{
             gridTemplateColumns: `repeat(${slides.length}, minmax(0, 1fr))`,
           }}
-          className="grid w-full gap-3 sm:flex sm:w-auto sm:flex-wrap sm:justify-center sm:gap-x-5 sm:gap-y-3"
+          className="grid w-full gap-3 sm:flex sm:w-auto sm:min-w-0 sm:flex-1 sm:justify-center sm:gap-x-5"
         >
           {slides.map((item, i) => {
             const isActive = i === active;
@@ -202,7 +202,7 @@ export default function Carousel({ slides, idPrefix, label }: Props) {
                 tabIndex={isActive ? 0 : -1}
                 aria-label={item.label}
                 onClick={() => show(i)}
-                className={`group py-2 text-left sm:py-0 ${slides.length > 3 ? "sm:w-[9rem]" : "sm:w-[12rem]"}`}
+                className={`group min-w-0 py-2 text-left sm:flex-1 sm:py-0 ${slides.length > 3 ? "sm:max-w-[9rem]" : "sm:max-w-[12rem]"}`}
               >
                 <span className="block h-0.5 overflow-hidden rounded-full bg-rule">
                   {isActive ? (

@@ -166,9 +166,9 @@ function Viewer({ id, onClose }: { id: ProjectId; onClose: () => void }) {
       onClick={(event) => {
         if (event.target === event.currentTarget) ref.current?.close();
       }}
-      className="m-auto max-h-[calc(100dvh-1.5rem)] w-[min(1200px,calc(100%-1.5rem))] overflow-y-auto rounded-[28px] border-0 bg-paper p-4 text-ink backdrop:bg-[oklch(20%_0.01_265/0.55)] backdrop:backdrop-blur-sm sm:p-8"
+      className="project-viewer m-auto max-h-[calc(100dvh-1.5rem)] overflow-y-auto rounded-[28px] border-0 bg-paper p-4 text-ink backdrop:bg-[oklch(20%_0.01_265/0.55)] backdrop:backdrop-blur-sm sm:px-7 sm:py-6"
     >
-      <div className="a-rise mb-5 flex items-start justify-between gap-4 sm:mb-6">
+      <div className="a-rise mb-5 flex items-start justify-between gap-4 sm:mb-4">
         <div className="min-w-0">
           <h2
             id="proyecto-titulo"

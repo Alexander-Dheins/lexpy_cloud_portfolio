@@ -385,6 +385,23 @@ body {
   .black-hole {
     mask-image: linear-gradient(to bottom, transparent, #000 18%);
   }
+  /* Ventana de un proyecto: en escritorio el ancho sale del alto de la
+     pantalla, así encabezado, carrusel (1120 x 680) y controles caben
+     siempre sin scroll, a cualquier resolución o zoom. --chrome es el alto
+     de todo lo que no es el carrusel. */
+  .project-viewer {
+    --chrome: 270px;
+    width: min(1200px, calc(100% - 1.5rem));
+  }
+  @media (min-width: 640px) {
+    .project-viewer {
+      width: min(
+        1200px,
+        calc(100% - 1.5rem),
+        max(560px, calc((100dvh - var(--chrome)) * 1120 / 680 + 3.5rem))
+      );
+    }
+  }
   .hero-backdrop {
     mask-image:
       linear-gradient(to right, transparent, #000 18%, #000 82%, transparent),
