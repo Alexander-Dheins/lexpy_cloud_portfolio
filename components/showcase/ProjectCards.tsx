@@ -32,6 +32,8 @@ const ORDER: ProjectId[] = ["mineops", "planning", "flota", "activos"];
 
 /* Proyectos que se abren directo en su propia web, sin visor. */
 const PYDEV_URL = "https://fanpagecontroldegastosapp.vercel.app/";
+const PYDEV_REPO =
+  "https://github.com/Alexander-Dheins/fanpage_control_de_gastos_app";
 
 /* Enlaces de cada proyecto, por ahora solo MINEOPS. */
 const LINKS: Partial<Record<ProjectId, { repo?: string; demo?: string }>> = {
@@ -91,9 +93,14 @@ function useProjectLinks(id: ProjectId) {
 }
 
 /* Enlaces sobre la miniatura de la tarjeta, si el proyecto los tiene. */
-function CardLinks({ id }: { id: ProjectId }) {
+function CardLinks({
+  id,
+  links = LINKS[id as ProjectId],
+}: {
+  id: string;
+  links?: { repo?: string; demo?: string };
+}) {
   const t = useI18n().t.projects;
-  const links = LINKS[id];
   if (!links) return null;
   const chip =
     "grid h-8 w-8 place-items-center rounded-full bg-panel-ink text-panel transition-opacity duration-[var(--dur-short)] hover:opacity-80";
@@ -442,6 +449,10 @@ export default function ProjectCards() {
           );
         })}
         <li className="relative w-[68%] shrink-0 snap-start sm:w-auto">
+          <CardLinks
+            id="pydev"
+            links={{ repo: PYDEV_REPO, demo: PYDEV_URL }}
+          />
           <a
             href={PYDEV_URL}
             target="_blank"
