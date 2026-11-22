@@ -390,6 +390,7 @@ const es = {
     close: "Cerrar",
     repo: "Ver el repositorio en GitHub",
     demo: "Abrir la demo",
+    visit: "Abrir la web",
     slideCount: "3 vistas",
     items: {
       mineops: {
@@ -419,6 +420,12 @@ const es = {
         desc: "Inventario de equipos y sus asignaciones.",
         status: "En desarrollo",
         slides: ["Inventario", "Ficha del equipo", "Movimientos"],
+      },
+      pydev: {
+        name: "PY.DEV",
+        desc: "App para controlar ingresos y egresos, en celular y PC.",
+        status: "",
+        slides: [],
       },
     },
   },
@@ -1003,6 +1010,7 @@ const en: Dict = {
     close: "Close",
     repo: "View the repository on GitHub",
     demo: "Open the demo",
+    visit: "Open the site",
     slideCount: "3 views",
     items: {
       mineops: {
@@ -1032,6 +1040,12 @@ const en: Dict = {
         desc: "Equipment inventory and assignments.",
         status: "In development",
         slides: ["Inventory", "Device record", "Movements"],
+      },
+      pydev: {
+        name: "PY.DEV",
+        desc: "App to track income and expenses, on phone and desktop.",
+        status: "",
+        slides: [],
       },
     },
   },

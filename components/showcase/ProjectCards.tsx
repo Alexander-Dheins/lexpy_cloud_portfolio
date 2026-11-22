@@ -30,6 +30,9 @@ export type ProjectId = "mineops" | "planning" | "flota" | "activos";
 
 const ORDER: ProjectId[] = ["mineops", "planning", "flota", "activos"];
 
+/* Proyectos que se abren directo en su propia web, sin visor. */
+const PYDEV_URL = "https://fanpagecontroldegastosapp.vercel.app/";
+
 /* Enlaces de cada proyecto, por ahora solo MINEOPS. */
 const LINKS: Partial<Record<ProjectId, { repo?: string; demo?: string }>> = {
   mineops: {
@@ -276,6 +279,31 @@ function Thumb({ id }: { id: ProjectId }) {
   );
 }
 
+function PydevThumb() {
+  return (
+    <div className="flex h-full flex-col justify-center gap-2 px-3">
+      <span className="mx-auto mb-0.5 block h-2.5 w-1/3 rounded-full bg-panel-ink/85" />
+      {[
+        [78, 0],
+        [52, 1],
+        [34, 2],
+      ].map(([w, i]) => (
+        <div
+          key={i}
+          style={{ "--d": i * 420 } as CSSProperties}
+          className="thumb-pulse flex items-center gap-1.5"
+        >
+          <span className="h-2 w-2 rounded-full bg-panel-4" />
+          <span
+            style={{ width: `${w}%` }}
+            className="h-1.5 rounded-full bg-panel-3"
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function Viewer({ id, onClose }: { id: ProjectId; onClose: () => void }) {
   const t = useI18n().t.projects;
   const item = t.items[id];
@@ -374,7 +402,7 @@ export default function ProjectCards() {
         <p className="text-[15px] text-muted">{t.lead}</p>
       </div>
 
-      <ul className="-mx-5 mt-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4">
+      <ul className="-mx-5 mt-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-5">
         {ORDER.map((id) => {
           const item = t.items[id];
           return (
@@ -413,6 +441,28 @@ export default function ProjectCards() {
             </li>
           );
         })}
+        <li className="relative w-[68%] shrink-0 snap-start sm:w-auto">
+          <a
+            href={PYDEV_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${t.items.pydev.name}: ${t.visit}`}
+            className="group flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-rule bg-paper-2 text-left transition-colors duration-[var(--dur-short)] hover:border-muted"
+          >
+            <div className="stage-matte relative aspect-[16/9] w-full text-panel-ink">
+              <PydevThumb />
+              <span className="absolute right-2.5 bottom-2.5 rounded-full bg-panel-ink px-2.5 py-1 text-[11.5px] font-medium text-panel opacity-0 transition-opacity duration-[var(--dur-short)] group-hover:opacity-100 group-focus-visible:opacity-100">
+                {t.visit}
+              </span>
+            </div>
+            <div className="flex flex-1 flex-col gap-1 p-3 sm:p-4">
+              <p className="text-[15px] font-semibold">{t.items.pydev.name}</p>
+              <p className="text-[13.5px] leading-snug text-muted">
+                {t.items.pydev.desc}
+              </p>
+            </div>
+          </a>
+        </li>
       </ul>
 
       {open ? (
